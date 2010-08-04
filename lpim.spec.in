@@ -1,0 +1,41 @@
+Name: wenju
+Summary: 文具(wenju) - Writing Tools
+Version: @VERSION@
+Release: 1
+License: GPL
+Group: User Interface/Desktops
+URL: http://sourceforge.net/projects/wenju
+Source: %{name}-%{version}.tar.gz
+Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root
+Packager: Yao Zhang <yaoz@users.sourceforge.org>
+Prefix: /usr
+
+%description
+文具将包括一系列中文编写工具,如输入法等。其中的 TIM (Table-based 
+Input Method) 是GTK+ 2的一个键盘输入模块,该输入法由其转换码表控
+制,你可以方便地修改码表来定义自己的输入法。内带五笔和拼音码表作
+为例子。将逐渐增加更多的码表及其他工具。
+文具(wenju) is a collection of writing tools such as TIM (Table-
+based Input Method), text file formatter, etc. All the tools are 
+based on Unicode.
+
+%prep
+%setup -q
+
+%build
+%configure
+make
+
+%install
+rm -fr %{buildroot}
+%makeinstall
+
+%clean
+rm -fr %{buildroot}
+
+%files
+%defattr(-,root,root)
+%{_bindir}
+%{_libdir}/gtk*
+%{_datadir}
+%doc AUTHORS COPYING INSTALL NEWS README ChangeLog

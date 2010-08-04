@@ -1,0 +1,599 @@
+2010-07-30  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* Makefile.am (ACLOCAL_AMFLAGS): New variable.
+	(EXTRA_DIST): Add m4/ChangeLog.
+
+Fri, 28 Sep 2007 15:54:26 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* Release 1.6: cvs tag wenju-1_6.
+	* ChangeLog configure.ac NEWS: Release 1.6.
+
+Fri, 28 Sep 2007 15:52:33 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* po/Makefile.in.in: Latest version from gettext package.
+
+Fri, 28 Sep 2007 15:49:20 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* src/tim/gtkimcontexttim.[ch]: Use WJ_DEBUG env to turn on debug.
+
+Fri, 28 Sep 2007 15:45:14 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* src/tim/Makefile.am tview.c testtext: A small text editor for
+	testing.
+
+Fri, 28 Sep 2007 15:34:26 -0400  Ambrose C. LI <acli@users.sourceforge.net>
+
+	* src/tim/tables/cj.tim: This is a better version of cj.tim
+	Improvements:
+	1. When there is more than 1 possible character, the
+	meaning of "1", "2", "3", etc. is the same as xcin
+	(This is achieved by putting an additional dummy
+	character in the list)
+	2. When there is more than 1 possible character, the
+	ordering of the characters are the same as xcin, so
+	"kb<space>" will, e.g., correctly give "has" instead of
+	"does not have".
+	3. The HKSCS mapping is used instead of Big5, so the
+	conversion is more complete. (The old cj.tim has lines
+	which are not converted and ends is = instead of a
+	Chinese character.)
+	4. The additional HKSCS mappings in cj.cin are
+	converted. So the user can input more characters.
+	Problems to be solved:
+	- When inputting the additional HKSCS characters,
+	sometimes the wrong character appears. This might be
+	due to a gtk/pango bug, or it is possible that I chose
+	the wrong column in the mapping file. (I am choosing
+	the mapping to ISO/IEC 10646-1:2000).
+
+Mon, 17 Jul 2006 11:34:23 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* src/tim/tim-config: Note on Windows GTK+ 2.8 /target directory
+	been removed.
+
+Thu, 16 Mar 2006 16:23:18 -0500  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* src/tim/tim-config: Note about show_input_method_menu.
+
+Thu, 16 Mar 2006 16:20:18 -0500  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* src/tim/gtkimcontexttim.c: Get rid of compiler warnings.
+
+Sat, 04 Dec 2004 18:07:21 -0500  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* Release 1.5: cvs tag wenju-1_5.
+	* ChangeLog configure.ac NEWS: Release 1.5.
+
+Fri, 03 Dec 2004 21:49:18 -0500  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* src/tim/gtkimcontexttim.c: Draw candidate window border like tooltip.
+
+Fri, 19 Nov 2004 00:01:31 -0500  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* src/tim/Makefile.am: To build DLL under Windows, -no-undefined
+	must used.
+
+Thu, 18 Nov 2004 23:59:28 -0500  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* configure.ac: Define PLATFORM_WIN32 conditional.
+
+Wed, 17 Nov 2004 16:52:02 -0500  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* configure.ac: Check function getline().
+	src/tim/getline.c Makefile.am
+	src/wrap/getline.c Makefile.am: In case getline() is not available,
+	provide one.
+
+Thu, 26 Aug 2004 22:26:35 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* src/tim/tables/shengdiao.tim pianpang.tim Makefile.am pinyin-p.tim:
+	Add Shengdiao and Pianpang tables.
+
+Thu, 26 Aug 2004 22:11:29 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* src/tim/tables/pinyin-p.tim: Include Greek table.
+
+Thu, 26 Aug 2004 22:09:10 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* src/tim/timtable.c (load): Process 'Include' keyword while
+	loading table.
+
+Thu, 26 Aug 2004 22:07:16 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* src/tim/table/greek.tim Makefile.am: Add Greek table.
+
+Mon, 19 Jul 2004 01:04:24 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* bootstrap: Clean up generated files.
+
+Mon, 19 Jul 2004 01:01:49 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* src/tim/Makefile.am: No need to generate local gtk.immodules.
+
+Fri, 21 May 2004 15:03:00 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* Release 1.4: cvs tag wenju-1_4.
+	* ChangeLog configure.ac NEWS: Release 1.4.
+
+Fri, 21 May 2004 14:44:55 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* src/tim/tables/cj5-s.tim Makefile.am README: Add 简体仓颉第五代 table.
+
+Mon, 17 May 2004 16:15:32 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* configure.ac: No need to check clock_gettime which is not used.
+	* tests/Makefile.am: No need to link to rt library.
+
+Mon, 17 May 2004 15:48:29 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* README: Update resources.
+
+Thu, 05 Feb 2004 14:07:32 -0500  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* Release 1.3: cvs tag wenju-1_3.
+	* ChangeLog configure.in NEWS: Release 1.3.
+
+Thu, 05 Feb 2004 14:00:42 -0500  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* wenju.spec wenju.spec.in: Generate wenju.spec from wenju.spec.in.
+
+Thu, 05 Feb 2004 13:58:04 -0500  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* configure.in configure.ac: Rename configure.in to configure.ac.
+
+Mon, 19 Jan 2004 16:42:47 -0500  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* src/tim/gtkimcontexttim.[ch]: Set candidate window initial
+	position in case client does not supply cursor location
+	(gnome-terminal and dia current don't.)
+
+Sat, 03 Jan 2004 18:53:17 -0500  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* Release 1.2: cvs tag wenju-1_2.
+	* ChangeLog configure.in NEWS wenju.spec: Release 1.2.
+
+Sat, 03 Jan 2004 18:50:28 -0500  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* po/Makefile.in.in wenju.pot zh_CN.po: Using newer Makefile.in.in
+	from gettext-0.12.1.
+
+Sat, 03 Jan 2004 18:38:44 -0500  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* src/tim/gtkimcontexttim.c: Comments on special handling as command
+	if control keys is pressed at the same time.
+
+Tue, 30 Dec 2003 15:33:30 -0500  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* src/tim/tables/bxm.tim Makefile.am README: Add Chinese biaoxing
+	table.
+
+Fri, 24 Oct 2003 15:14:09 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* src/tim/gtkimcontexttim.c: Select candidate by ' 1234567890'
+	and in that order.  Inspired by Shen Chuan-Hsing's patch.
+
+Sat, 18 Oct 2003 13:17:58 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* Release 1.1: cvs tag wenju-1_1.
+	* ChangeLog configure.in NEWS wenju.spec: Release 1.1.
+
+Sat, 18 Oct 2003 13:06:42 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* src/tim/tables/cj.tim liu.tim phone.tim README Makefile.am:
+	Add tables converted from XCIN by Shen Chuan-Hsing ("statue"
+	<statue@freebsd.netlab.cse.yzu.edu.tw>).
+
+Thu, 17 Jul 2003 13:10:43 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* src/tim/gtkimcontexttim.c: Make sure candidate window always
+	stays within screen.
+
+Thu, 10 Jul 2003 22:02:16 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* src/tim/gtkimcontexttim.c: Always load user defined
+	~/.wenju/my.tim first.
+
+Sat, 28 Jun 2003 22:13:49 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* Release 1.0: cvs tag wenju-1_0.
+
+Wed, 19 Mar 2003 19:24:05 -0500  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* src/tim/gtkimcontexttim.c: Replace reverse with italic style in
+	preedit text.
+
+Wed, 19 Mar 2003 19:23:08 -0500  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* src/tim/tables/erbi.tim: Add ErBi table.
+
+Tue, 04 Feb 2003 15:37:43 -0500  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* wenju.spec: Do not include /lib/debug in the rpm package.
+
+Tue, 21 Jan 2003 23:48:23 -0500  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* bootstrap: Remove Makefile.in files.
+	* configure.in: Update to new version of autotools.
+	* wenju.spec: Update to version 1.0.
+
+Tue, 21 Jan 2003 23:40:32 -0500  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* po/LINGUAS Makefile.in.in Makevars POTFILES.in remove-potcdate.sin
+	wenju.pot zh_CN.po: Initial check in.
+	* Makefile.am: Add po.
+
+Tue, 21 Jan 2003 23:24:46 -0500  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* doc/release: Update version in wenju.spec too.
+	* doc/htdocs/tim/faq.html: Correct a typo.
+
+Tue, 21 Jan 2003 23:11:07 -0500  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* src/tim/Makefile.am tests/Makefile.am: Use DEPS instead of
+	AM_CFLAGS.
+	* src/tim/timtable.h: Add struct tag.
+	* src/tim/gtkimcontexttim.[ch]: Add carryover_state field.
+	* tests/wenju.c: Try gettext.
+
+Tue, 21 Jan 2003 20:33:59 -0500  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* src/tim/tables/*.tim: IM names in Chinese.
+
+Fri,  2 Aug 2002 19:33:25 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* Release 0.9: cvs tag wenju-0_9 .
+
+Thu,  1 Aug 2002 18:58:11 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* wenju.spec: Add INSTALL to %doc.
+	* src/tim/tim-config: Add shell heading.
+
+Thu,  1 Aug 2002 17:35:55 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* doc/htdocs/tim/faq.html table.html src/tim/README: Tables directory
+	has been changed.
+
+Thu,  1 Aug 2002 16:56:22 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* configure.in wenju.spec: Change to release 0.9.  Do not generate
+	static library.
+
+Thu,  1 Aug 2002 16:36:38 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* src/tim/Makefile.am: Define PKGDATADIR so that module code
+	can search TIM tables in this directory.
+	* src/tim/imtim.c src/tim/timtable.c: List and search TIM tables
+	in .:~/.wenju:$PKGDATADIR and in that order.
+
+Thu,  1 Aug 2002 16:35:40 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* src/tim/Makefile.am: Install TIM module in GTK+ 2 module directory.
+	Install TIM tables to package data directory.
+	* src/tim/tim-config: Add a script to configure USER after 'wenju'
+	is installed or a new TIM table is added or an old TIM table is
+	removed.
+	* src/tim/Makefile.am README: Install the TIM tables in package
+	data directory.
+
+Wed, 31 Jul 2002 14:33:57 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* src/tim/example-*.tim: Add 'TIMName' header.
+	* src/tim/tables/FirstStep/*.tim: Add 'TIMName' header.
+
+Wed, 31 Jul 2002 13:42:01 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* src/tim/gtkimcontexttim.[ch]: Add class function set().  Maintain
+	multiple tables hash to serve different TIM tables and share one if
+	different instances using the same table.  Make initial input state
+	in Non-ASCII mode.
+	* src/tim/imtim.c: Scan *.tim files for multiple TIM names. The
+	context id is the file name.
+	* src/tim/timtable.[ch]: Add class function load() and utility
+	function get_im_name() for module list().
+	* src/tim/README doc/htdocs/tim/*.html: Updated usage for the changes
+	above.
+
+Wed, 31 Jul 2002 00:34:10 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* src/tim/tables/*.tim: Add 'TIMName' header.
+
+Tue, 23 Jul 2002 16:07:36 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* src/tim/tables.qfrench.tim: Escape '|' and add '[', etc.
+
+Tue, 23 Jul 2002 01:01:29 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+        * Release 0.8: cvs tag wenju-0_8 .
+
+Tue, 23 Jul 2002 00:02:31 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* src/tim/tables/qfrench.tim Makefile.am: A simple French IM based
+	on Keyman tutorial.
+	* src/tim/gtkimcontexttim.[ch]: Add auto_commit and return handling
+	status of handlers.
+	* src/tim/Makefile.am: Make symbolic link to ~/.wenju/table.tim
+	only if it is not there.
+	* doc/htdocs/tim/faq.html table.html src/tim/README: Relocate
+`	table.tim under ~/.wenju/.
+	* configure.in: Add GTK2_BINARY_VERSION.
+	* Makefile.am: Add libtool to dist.
+
+Tue,  2 Jul 2002 23:11:31 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+        * src/wrap/wrap.c: Deal with full width parenthes.
+        * src/tim/timtable.c Makefile.am: Load table from ~/.wenju/table.tim.
+        * bootstrap: Add libtoolize for the new version of autotools.
+        * Makefile.am: Add wenju.spec to dist.
+
+Fri, 28 Jun 2002 13:52:05 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+        * src/tim/Makefile.am: Use tables/pinyin-p.tim as the default
+        installed table.
+
+Wed, 26 Jun 2002 23:55:12 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+        * doc/htdocs/style.css: Default to sans-serif font.
+
+Wed, 26 Jun 2002 17:02:18 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+        * doc/htdocs/index.html: GNOME 2 released.
+        * doc/htdocs/tim/table.html: Tables listing.
+
+Tue, 25 Jun 2002 13:04:37 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+        * src/tim/gtkimcontexttim.c: Fix a bug that candidates window is
+        placed outside the screen.
+
+Mon, 17 Jun 2002 13:58:37 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+        * doc/htdocs/tim/faq.html src/tim/README: Add paging and selection
+        usage.
+
+Mon, 17 Jun 2002 00:44:15 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+        * Release 0.7: cvs tag wenju-0_7 .
+
+Thu, 13 Jun 2002 20:18:27 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+        * src/tim/tables/*.tim FirstStep/*.tim: Convert to new format.
+        * src/tim/timtable.[ch] gtkimcontexttim.c: Change to new table format.
+        * src/tim/Makefile.am: Add example tables for CN and EN.
+
+Wed, 12 Jun 2002 13:27:06 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+        * src/tim/gtkimcontexttim.c: Selection shortcut with functional keys.
+
+Mon, 10 Jun 2002 22:01:49 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+        * All: Remove generated files from CVS.
+
+Mon, 10 Jun 2002 14:34:49 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+        * src/tim/gtkimcontexttim.c: More candidate handling: page, selector.
+	* Release 0.6: cvs tag wenju-0_6 .
+
+Sun,  9 Jun 2002 22:57:56 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+        * src/tim/gtkimcontexttim.c: Add select n.
+        * src/tim/timtable.c: Change finalize() signature.
+
+Sun,  2 Jun 2002 23:49:40 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+        * src/tim/tables/FirstStep/dianbo.tim wubihua.tim: DianBo and WuBiHua
+        tables converted from FirstStep.
+
+        * src/tim/tables/wubihua-n.tim Makefile.am README: Add WuBiHua table.
+        It is sorted according to character frequency.
+
+Fri, 31 May 2002 22:41:36 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+        * doc/htdocs/tim/table.tim: More about tables.
+
+Mon, 20 May 2002 00:58:09 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+        * src/tim/gtkimcontexttim.c: Rewrite TIM command processing as
+        handlers.
+
+Tue, 14 May 2002 01:15:11 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+        * configure.in configure config/mkinstalldirs: Change version number
+        to 0.5.
+
+        * NEWS: What's new for release 0.5.
+
+	* Release 0.5: cvs tag wenju-0_5 .
+
+Tue, 14 May 2002 00:54:59 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+        * doc/htdocs/index.html wrap/faq.html: Add 'wrap'.
+
+        * src/wrap/wrap.c: If width setting is too small (< 3), use default 64.
+
+        * src/tim/testtext: RH 7.3 already has /usr/bin/testtext.
+
+Mon, 13 May 2002 14:28:49 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* src/wrap/wrap.c: Handle options.
+
+Sun, 12 May 2002 23:16:56 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* configure.in configure: Add 'wrap' utility.
+
+	* src/Makefile.am Makefile.in: Add 'wrap' utility.
+
+	* src/wrap/Makefile.am Makefile.in wrap.c wcwidth.c: Add 'wrap' utility.
+
+Thu,  9 May 2002 23:27:53 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* All: Get 'make dist' to work.
+
+	* doc/release: Simply 'make dist'.
+
+	* src/tim/table.tim: Use the sample table as default.
+
+Wed,  8 May 2002 14:08:09 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* Release 0.4: cvs tag wenju-0_4 .
+
+Wed,  8 May 2002 13:46:48 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* All: Update generated files.
+
+	* src/tim/Makefile.am: Change LDADD to LDADDS.
+
+	* src/tim/testtext: Program testtext is now part of RH7.3.
+
+Fri,  3 May 2002 16:57:59 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* doc/htdocs/tim/faq.html *.png: Add figures.
+
+	* src/tim/README: Sync with doc/htdocs/tim/faq.html.
+
+Fri,  3 May 2002 01:38:28 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* doc/htdocs/index.html tim/faq.html: Add TIM link.
+
+	* doc/htdocs/index.html: Add SourceForge wenju project link.
+
+Thu,  2 May 2002 13:20:12 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* src/tim/gtkimcontexttim.c: Modify PREVIOUS handling to make it
+	a little bit cleaner.
+
+	* src/tim/gtkimcontexttim.c (gtkimcontexttim_get_preedit_string):
+	Only if when there is just one candidate, show the candidate in
+	pre-edit string; in all other cases, show the raw key sequence in
+	pre-edit string.
+
+	* src/tim/gtkimcontexttim.c (gtkimcontexttim_filter_keypress):
+	If no raw text, BACKSPACE will delete the last converted character. 
+
+	* src/tim/gtkimcontexttim.c: Implement focus in and focus out.
+
+Wed,  1 May 2002 21:57:26 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* src/tim/timtable.[ch]: Add copyright heading.
+
+	* src/tim/gtkimcontexttim.c: Fix candidate window width problem.
+
+	* src/tim/gtkimcontexttim.c: Implement PREVIOUS.
+
+Mon, 29 Apr 2002 23:24:44 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* doc/release: Add removing CVS directory step.
+
+Mon, 29 Apr 2002 22:41:02 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* doc/release: Add release procedure.
+
+	* Release 0.3: cvs tag wenju-0_3 .
+
+Mon, 29 Apr 2002 17:04:29 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* src/tim/gtkimcontexttim.c: Use weak pointer to make sure TABLE
+	will be set to NULL when TABLE is been finalized.
+
+	* src/tim/tables/pinyin.tim: Add pinyin table.
+
+	* src/tim/tables/pinyin-p.tim: Add partial pinyin table.
+
+	* src/tim/tables/README: About the sample tables in this directory.
+
+Sat, 27 Apr 2002 14:34:02 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* src/tim/README: Add a paragraph in installation section about
+	GTK_IM_MODULE_FILE. 
+
+	* src/tim/gtkimcontexttim.c: Space key could be SELECT/SPACE
+	and Enter key could be COMMIT/ENTER.
+
+	* README: Add summary in Chinese.
+
+Sat, 27 Apr 2002 01:13:39 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* src/tim/timtable.[ch]: Wrap the table as a GObject.
+
+	* src/tim/gtkimcontexttim.[ch] Makefile.am Makefile.in : Make use
+	of the new TIMTable.  Now TIMTable *TABLE is a 'module' variable.
+	It will be loaded as long as the module is loaded, and unloaded
+	when the module is unloaded.
+
+	* src/tim/imtim.c: Register the new TIMTable for the module.
+
+        * src/tim/README: Tab key is normally used to navigate in dialogs.
+	Change NEXT/PREVIOUS to >/<.
+
+Thu, 25 Apr 2002 17:22:57 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* src/tim/gtkimcontexttim.[ch]: Popup candidates window if there are
+	multiple candidates.
+
+	* src/tim/README: Change some wording in English.
+
+	* Release 0.2: cvs tag wenju-0_2 .
+
+Mon, 22 Apr 2002 01:20:54 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* src/tim/gtkimcontexttim.c: Free the new key if an old one is
+	already in the table. 
+
+	* src/tim/gtkimcontexttim.[ch]: Replace client_window to 
+	client_widget.
+
+Sat, 20 Apr 2002 15:16:20 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* src/tim/gtkimcontexttim.c: Handling key sequence duplication in
+	multiple lines while loading table.tim. 
+
+	* src/tim/table.tim tables/wubi.tim: Complete wubi table.
+
+Fri, 19 Apr 2002 21:39:43 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* Release 0.1: cvs tag wenju-0_1 .
+
+Fri, 19 Apr 2002 13:40:06 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* src/tim/gtkimcontexttim.c: In table file, allow spaces in value.
+	Check if client_window is NULL before operating on it.
+
+	* AUTHORS: Add name in Chinese.
+
+	* doc/htdocs/index.html style.css template.html upload: Project
+	web pages.
+
+Thu, 18 Apr 2002 22:06:23 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* src/tim/*.[ch]: Add copyright notice.
+
+	* src/tim/tables/wubi.tim: Wubi sample table.  Adapted from
+	LIANG Changtai (linuxrat@users.sourceforge.net),
+	cjkvinput-wubi-table.txt. See
+	    http://sourceforge.net/projects/cjkvinput.
+
+	* src/tim/README: Add English translation.
+
+Thu, 18 Apr 2002 00:40:50 -0400  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* src/tim/Makefile.am Makefile.in: Define MODULEDIR macro which is
+	needed in the source code.
+
+	* src/tim/gtkimcontexttim.h: Add TIM specific fields to
+	GtkIMContextTIM.
+
+	* src/tim/gtkimcontexttim.c: Complete implementation.
+
+	* src/tim/imtim.c: Remove debug lines.
+
+	* src/tim/README: README for TIM.
+
+	* src/tim/table.tim: Sample table.
+
+Wed,  3 Apr 2002 22:29:09 -0500  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* Initial import of other files.
+
+Tue,  2 Apr 2002 22:33:00 -0500  Yao Zhang  <yaoz@users.sourceforge.net>
+
+	* Register the 文具 project at SourceForge.
+
+	* README: Registration information.

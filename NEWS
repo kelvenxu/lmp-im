@@ -1,0 +1,110 @@
+What' new in wenju 1.6:
+
+* Improved Chinese cangjie table. (By Ambrose C. LI)
+* Set WJ_DEBUG env to turn on debug.
+
+What' new in wenju 1.5:
+
+* Add 'Include' keyword in TIM table to load another table into the
+  current table.
+* Add Greek, pinyin shengdiao and Chinese pianpang tables.
+* Build on Windows.
+
+What' new in wenju 1.4:
+
+* Add Simplified Chinese cangjie table.
+
+What' new in wenju 1.3:
+
+* Set candidate window initial position in case client does not
+  supply cursor location.  For example, gnome-terminal and dia
+  currently do not tell IM about the cursor location.
+* Rename configure.in to configure.ac.
+* Generate wenju.spec from wenju.spec.in.
+
+What' new in wenju 1.2:
+
+* Select candidate by ' 1234567890' and in that order.  Thanks to
+  Shen Chuan-Hsing.
+* Add Chinese biaoxing table.
+
+What' new in wenju 1.1:
+
+* Always load user defined table ~/.wenju/my.tim.
+* Always place candidate window within screen.
+* Add TIM tables converted from XCIN.  Thanks to Shen Chuan-Hsing.
+
+What' new in wenju 1.0:
+
+* Display IM names in Chinese.
+* Add ErBi table.
+* Display preedit text in italics.
+
+What' new in wenju 0.9:
+
+* Update documents.
+* Add 'TIMName' header in TIM table.
+* List all the available tables in input methods popup menu so that all
+the tables in .:~/.wenju:<PKGDATADIR> are available to a user.  The same
+TIM module can now handle different tables for one application.
+* The initial input state changed to non-ASCII table mode.
+* Install TIM module into GTK+ 2 module directory.  Install TIM tables
+into wenju's data directory.
+* Add a configure script tim-config for USER.  Use it after any change
+is make to the TIM module and/or tables.
+
+What' new in wenju 0.8:
+
+* Update documents.
+* Fix candidate window outside of screen bug.
+* Handles "BackSpace" key properly.
+* Add "AutoCommit" property.  The default value is '0'.
+* Add a simple French IM based on Keyman tutorial.
+* TIM table location changed to ~/.wenju/table.tim.
+* Use partial pinyin table as TIM's default table.
+* Wrap can process full width parenthes correctly.
+
+What' new in wenju 0.7:
+
+* Ctrl/Alt, etc plus number serves as a shortcut to the selection.
+* TIM table format change.
+
+What' new in wenju 0.6:
+
+* Candidates with selector: ',' and '.' for PREVIOUS and NEXT, '<' and
+  '>' for PREVIOUS_PAGE and NEXT_PAGE.
+* Two new TIM tables adapted from FirstStep: DianBo, WuBiHua.
+
+What' new in wenju 0.5:
+
+* Add 'wrap' text file formatting utility.
+* Updated documentation.
+* The installed TIM table is just a small example.  You have to follow the
+  instruction to use your favorite TIM table.
+
+What' new in wenju 0.4:
+
+* Rewrite TIM FAQ in html format.  Take a look at
+  http://wenju.sourceforge.net/.
+* Fix a bug with the candidate window width.
+* Implement PREVIOUS key (<).
+
+What' new in wenju 0.3:
+
+* Since Tab key is used in dialog box navigation, to avoid conflict, change
+  NEXT and PREVOUS to > and < keys.
+* If nothing to convert, space bar is behavied just like, space bar.
+* If nothing to commit, Enter key is behavied just like, Enter key.
+* Add pinyin and partial pinyin sample tables.
+* Now the conversion table is a module variable which is shared among
+  different instances of the GtkIMContextTIM.
+
+What' new in wenju 0.2:
+
+* A complete Wubi sample table.
+* Popup candidates window when needed.
+
+What' new in wenju 0.1:
+
+* Start the wenju project.
+* Finish TIM (Table-based Input Method module for GTK+ 2) 
