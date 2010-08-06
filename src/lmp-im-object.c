@@ -39,12 +39,15 @@ struct _LmpIMObjectPrivate
 	GdkWindow *client_window;
 
 	GtkWidget *im_window;
+
+	gboolean english_mode;
+	guint old_keyval;
 };
 
 static void     
 lmp_im_object_set_client_window(GtkIMContext *context, GdkWindow *window)
 {
-	fprintf(stderr, "%s : %s\n", __FILE__, __func__);
+	//fprintf(stderr, "%s : %s\n", __FILE__, __func__);
 
 	LmpIMObject *im = LMP_IM_OBJECT(context);
 	LmpIMObjectPrivate *priv = LMP_IM_OBJECT_GET_PRIVATE(im);
@@ -60,7 +63,7 @@ lmp_im_object_set_client_window(GtkIMContext *context, GdkWindow *window)
 		priv->client_window = g_object_ref(window);
 	}
 
-	fprintf(stderr, "%s : %s end\n", __FILE__, __func__);
+	//fprintf(stderr, "%s : %s end\n", __FILE__, __func__);
 }
 
 #if 0
@@ -102,15 +105,12 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 	LmpIMObject *im = LMP_IM_OBJECT(context);
 	LmpIMObjectPrivate *priv = LMP_IM_OBJECT_GET_PRIVATE(im);
 
-	fprintf(stderr, "%s : %s\n", __FILE__, __func__);
-	fprintf(stderr, "state - 0x%X, keyval - 0x%X time %u\n", event->state & GDK_SHIFT_MASK, event->keyval, event->time);
+	//fprintf(stderr, "%s : %s\n", __FILE__, __func__);
+	//fprintf(stderr, "state - 0x%X, keyval - 0x%X time %u\n", event->state & GDK_SHIFT_MASK, event->keyval, event->time);
 
-	static guint keyval;
-	static gboolean english_mode = FALSE;
-
-	if(event->type == GDK_KEY_RELEASE && event->keyval == GDK_Shift_L && keyval == GDK_Shift_L)
+	if(event->type == GDK_KEY_RELEASE && event->keyval == GDK_Shift_L && priv->old_keyval == GDK_Shift_L)
 	{
-		english_mode = !english_mode;
+		priv->english_mode = !priv->english_mode;
 	}
 
 	if(event->type != GDK_KEY_PRESS) 
@@ -118,9 +118,9 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 		return FALSE;
 	}
 
-	keyval = event->keyval;
+	priv->old_keyval = event->keyval;
 
-	if(english_mode)
+	if(priv->english_mode)
 	{
 		if(event->keyval == GDK_BackSpace)
 			return FALSE;
@@ -270,7 +270,6 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 					(event->keyval <= GDK_z) && 
 					(!(event->state & GDK_SHIFT_MASK)) &&
 					(!(event->state & GDK_CONTROL_MASK)))
-	//else if((event->keyval >= GDK_a) && (event->keyval <= GDK_z) && (!event->is_modifier))
 	{
 		lmp_im_window_append_code_char(LMP_IM_WINDOW(priv->im_window), event->keyval);
 		const gchar *code = lmp_im_window_get_code(LMP_IM_WINDOW(priv->im_window));
@@ -279,11 +278,10 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 			GPtrArray *array = db_query2(code);
 			if(array && array->len > 0)
 			{
-				gtk_widget_show(priv->im_window);
+				lmp_im_window_show(LMP_IM_WINDOW(priv->im_window));
 				lmp_im_window_set_candidate(LMP_IM_WINDOW(priv->im_window), array);
 			}
 		}
-		//g_print("4\n");
 	}
 	else
 	{
@@ -302,7 +300,8 @@ lmp_im_object_focus_in(GtkIMContext *context)
 	LmpIMObjectPrivate *priv = LMP_IM_OBJECT_GET_PRIVATE(im);
 
 	if(lmp_im_window_has_code(LMP_IM_WINDOW(priv->im_window)))
-		gtk_widget_show(priv->im_window);
+		//gtk_widget_show(priv->im_window);
+		lmp_im_window_show(LMP_IM_WINDOW(priv->im_window));
 }
 
 static void     
@@ -319,13 +318,13 @@ lmp_im_object_focus_out(GtkIMContext *context)
 static void     
 lmp_im_object_reset(GtkIMContext *context)
 {
-	fprintf(stderr, "%s : %s\n", __FILE__, __func__);
+	//fprintf(stderr, "%s : %s\n", __FILE__, __func__);
 }
 
 static void     
 lmp_im_object_set_cursor_location(GtkIMContext *context, GdkRectangle *area)
 {
-	fprintf(stderr, "%s : %s\n", __FILE__, __func__);
+	//fprintf(stderr, "%s : %s\n", __FILE__, __func__);
 	LmpIMObject *im = LMP_IM_OBJECT(context);
 	LmpIMObjectPrivate *priv = LMP_IM_OBJECT_GET_PRIVATE(im);
 
@@ -358,7 +357,7 @@ lmp_im_object_finalize(LmpIMObject *self)
 static void
 lmp_im_object_init(LmpIMObject *self)
 {
-	fprintf(stderr, "%s : %s\n", __FILE__, __func__);
+	//fprintf(stderr, "%s : %s\n", __FILE__, __func__);
 	LmpIMObjectPrivate *priv;// = self->priv;
 
 	priv = LMP_IM_OBJECT_GET_PRIVATE(self);
@@ -367,7 +366,10 @@ lmp_im_object_init(LmpIMObject *self)
 	priv->im_window = lmp_im_window_new();
 
 	gtk_im_context_set_use_preedit(GTK_IM_CONTEXT(self), FALSE);
-	fprintf(stderr, "%s : %s end\n", __FILE__, __func__);
+	//fprintf(stderr, "%s : %s end\n", __FILE__, __func__);
+
+	priv->english_mode = FALSE;
+	priv->old_keyval = 0;
 
 	db_open(DATADIR"/wubi.db");
 }
@@ -375,7 +377,7 @@ lmp_im_object_init(LmpIMObject *self)
 static void
 lmp_im_object_class_init(LmpIMObjectClass *self_class)
 {
-	fprintf(stderr, "%s : %s\n", __FILE__, __func__);
+	//fprintf(stderr, "%s : %s\n", __FILE__, __func__);
 	GObjectClass *object_class = G_OBJECT_CLASS(self_class);
 
 	g_type_class_add_private(self_class, sizeof(LmpIMObjectPrivate));

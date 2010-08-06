@@ -79,17 +79,18 @@ lmp_im_window_init(LmpIMWindow *self)
 	gtk_container_add(GTK_CONTAINER(self), priv->frame);
 	gtk_container_add(GTK_CONTAINER(priv->frame), priv->vbox);
 
+	gtk_misc_set_alignment(GTK_MISC(priv->code_label), 0, 0.5);
+	gtk_misc_set_alignment(GTK_MISC(priv->cand_label), 0, 0.5);
+
+	gtk_label_set_single_line_mode(GTK_LABEL(priv->code_label), TRUE);
+	gtk_label_set_single_line_mode(GTK_LABEL(priv->cand_label), TRUE);
+
 	gtk_widget_show(priv->frame);
 	gtk_widget_show(priv->vbox);
 	gtk_widget_show(priv->code_label);
 	gtk_widget_show(priv->cand_label);
 	gtk_widget_show(priv->sepatator);
 
-	gtk_misc_set_alignment(GTK_MISC(priv->code_label), 0, 0.5);
-	gtk_misc_set_alignment(GTK_MISC(priv->cand_label), 0, 0.5);
-
-	gtk_label_set_single_line_mode(GTK_LABEL(priv->code_label), TRUE);
-	gtk_label_set_single_line_mode(GTK_LABEL(priv->cand_label), TRUE);
 
 	priv->code_str = g_string_new("");
 	priv->cand_str = g_string_new("");
@@ -245,6 +246,7 @@ lmp_im_window_hide(LmpIMWindow *self)
 void 
 lmp_im_window_show(LmpIMWindow *self)
 {
+	gtk_window_resize(GTK_WINDOW(self), 1, 1);
 	gtk_widget_show(GTK_WIDGET(self));
 }
 
