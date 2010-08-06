@@ -338,13 +338,14 @@ lmp_im_object_set_cursor_location(GtkIMContext *context, GdkRectangle *area)
 		GdkDisplay *display = gdk_display_get_default();
 		gint cursor_size = gdk_display_get_default_cursor_size(display);
 
-		gtk_window_move(GTK_WINDOW(priv->im_window), x + area->x, y + area->y + cursor_size + 4);
+		lmp_im_window_move(LMP_IM_WINDOW(priv->im_window), x + area->x, y + area->y + cursor_size);
 	}
 }
 
 static void
 lmp_im_object_dispose(LmpIMObject *self)
 {
+	db_close();
 	fprintf(stderr, "%s : %s\n", __FILE__, __func__);
 }
 

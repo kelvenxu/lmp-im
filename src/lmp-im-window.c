@@ -71,9 +71,9 @@ lmp_im_window_init(LmpIMWindow *self)
 	priv->cand_label = gtk_label_new("");
 
 	priv->sepatator = gtk_hseparator_new();
-	gtk_box_pack_start(GTK_BOX(priv->vbox), priv->code_label, TRUE, TRUE, 4);
-	gtk_box_pack_start(GTK_BOX(priv->vbox), priv->sepatator, TRUE, TRUE, 4);
-	gtk_box_pack_start(GTK_BOX(priv->vbox), priv->cand_label, TRUE, TRUE, 4);
+	gtk_box_pack_start(GTK_BOX(priv->vbox), priv->code_label, TRUE, TRUE, 1);
+	gtk_box_pack_start(GTK_BOX(priv->vbox), priv->sepatator, TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(priv->vbox), priv->cand_label, TRUE, TRUE, 1);
 
 	//gtk_container_add(GTK_CONTAINER(self), priv->vbox);
 	gtk_container_add(GTK_CONTAINER(self), priv->frame);
@@ -248,6 +248,26 @@ lmp_im_window_show(LmpIMWindow *self)
 {
 	gtk_window_resize(GTK_WINDOW(self), 1, 1);
 	gtk_widget_show(GTK_WIDGET(self));
+}
+
+void
+lmp_im_window_move(LmpIMWindow *self, int x, int y)
+{
+	int root_w; 
+	int root_h;
+	int self_w;
+	int self_h;
+
+	GdkWindow *root_window = gdk_get_default_root_window();
+	gdk_drawable_get_size(GDK_DRAWABLE(root_window), &root_w, &root_h);
+	gtk_window_get_size(GTK_WINDOW(self), &self_w, &self_h);
+
+	if(x + self_w > root_w)
+	{
+		x = root_w - self_w;
+	}
+
+	gtk_window_move(GTK_WINDOW(self), x, y + 4);
 }
 
 static GType im_win_type = 0;

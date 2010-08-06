@@ -68,6 +68,7 @@ gboolean lmp_im_window_has_code(LmpIMWindow *self);
 gboolean lmp_im_window_has_candidate(LmpIMWindow *self);
 void lmp_im_window_hide(LmpIMWindow *self);
 void lmp_im_window_show(LmpIMWindow *self);
+void lmp_im_window_move(LmpIMWindow *self, int x, int y);
 
 
 G_END_DECLS
