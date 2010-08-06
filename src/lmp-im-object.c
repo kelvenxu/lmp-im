@@ -102,16 +102,38 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 	LmpIMObject *im = LMP_IM_OBJECT(context);
 	LmpIMObjectPrivate *priv = LMP_IM_OBJECT_GET_PRIVATE(im);
 
-	static char two_char_string[2];
-	two_char_string[0] = '\0';
-	two_char_string[1] = '\0';
+	fprintf(stderr, "%s : %s\n", __FILE__, __func__);
+	fprintf(stderr, "state - 0x%X, keyval - 0x%X time %u\n", event->state & GDK_SHIFT_MASK, event->keyval, event->time);
 
-	//fprintf(stderr, "%s : %s\n", __FILE__, __func__);
-	//fprintf(stderr, "state - 0x%X, keyval - 0x%X time %u\n", event->state, event->keyval, event->time);
+	static guint keyval;
+	static gboolean english_mode = FALSE;
+
+	if(event->type == GDK_KEY_RELEASE && event->keyval == GDK_Shift_L && keyval == GDK_Shift_L)
+	{
+		english_mode = !english_mode;
+	}
 
 	if(event->type != GDK_KEY_PRESS) 
 	{
 		return FALSE;
+	}
+
+	keyval = event->keyval;
+
+	if(english_mode)
+	{
+		if(event->keyval == GDK_BackSpace)
+			return FALSE;
+
+		lmp_im_object_send_keyval(im, event);
+		return FALSE;
+	}
+
+	if(((event->state & GDK_LOCK_MASK) && (!(event->state & GDK_SHIFT_MASK))) ||
+		((!(event->state & GDK_LOCK_MASK)) && (event->state & GDK_SHIFT_MASK)))
+	{
+		lmp_im_object_send_keyval(im, event);
+		return TRUE;
 	}
 
 	if(event->keyval == GDK_BackSpace)
@@ -127,6 +149,10 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 				{
 					lmp_im_window_set_candidate(LMP_IM_WINDOW(priv->im_window), array);
 				}
+			}
+			else
+			{
+				gtk_widget_hide(priv->im_window);
 			}
 
 			return TRUE;
@@ -153,6 +179,7 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 			const gchar *chinese = lmp_im_window_candidate_index(LMP_IM_WINDOW(priv->im_window), index);
 			g_signal_emit_by_name(im, "commit", chinese);
 			lmp_im_window_clear(LMP_IM_WINDOW(priv->im_window));
+			gtk_widget_hide(priv->im_window);
 
 			return TRUE;
 		}
@@ -181,6 +208,7 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 		}
 
 		lmp_im_window_clear(LMP_IM_WINDOW(priv->im_window));
+		gtk_widget_hide(priv->im_window);
 
 		return TRUE;
 	}
@@ -229,6 +257,7 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 		{
 			g_signal_emit_by_name(im, "commit", code);
 			lmp_im_window_clear(LMP_IM_WINDOW(priv->im_window));
+			gtk_widget_hide(priv->im_window);
 			return TRUE;
 		}
 		else
@@ -250,10 +279,11 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 			GPtrArray *array = db_query2(code);
 			if(array && array->len > 0)
 			{
+				gtk_widget_show(priv->im_window);
 				lmp_im_window_set_candidate(LMP_IM_WINDOW(priv->im_window), array);
 			}
 		}
-		g_print("4\n");
+		//g_print("4\n");
 	}
 	else
 	{
@@ -271,7 +301,8 @@ lmp_im_object_focus_in(GtkIMContext *context)
 	LmpIMObject *im = LMP_IM_OBJECT(context);
 	LmpIMObjectPrivate *priv = LMP_IM_OBJECT_GET_PRIVATE(im);
 
-	gtk_widget_show(priv->im_window);
+	if(lmp_im_window_has_code(LMP_IM_WINDOW(priv->im_window)))
+		gtk_widget_show(priv->im_window);
 }
 
 static void     
