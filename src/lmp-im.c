@@ -25,11 +25,23 @@
 #include <gtk/gtk.h>
 #include "lmp-im-object.h"
 
-static GtkIMContextInfo *info;
+static const GtkIMContextInfo im_info = 
+{
+	"lmp",
+	"Lmp input method",
+	"gtk20",
+	"/usr/share/locale",
+	"zh"
+};
+
+static const GtkIMContextInfo *info_list[] = 
+{
+	  &im_info
+};
 
 void im_module_init(GTypeModule *type_module)
 {
-	fprintf(stderr, "%s : %s\n", __FILE__, __func__);
+	//fprintf(stderr, "%s : %s\n", __FILE__, __func__);
 
 	lmp_im_window_register_type(type_module);
 	lmp_im_object_register_type(type_module);
@@ -37,48 +49,27 @@ void im_module_init(GTypeModule *type_module)
 
 void im_module_exit(void)
 {
-	fprintf(stderr, "%s : %s\n", __FILE__, __func__);
-
-	if(info != NULL) 
-	{
-		g_free((void *)info->context_id);
-		g_free((void *)info->context_name);
-		g_free((void *)info->domain);
-		g_free((void *)info->domain_dirname);
-		g_free((void *)info->default_locales);
-		g_free(info);
-		info = NULL;
-	}
 }
 
 void im_module_list(const GtkIMContextInfo ***contexts, int *n_contexts)
 {
-	fprintf(stderr, "%s : %s\n", __FILE__, __func__);
+	//fprintf(stderr, "%s : %s\n", __FILE__, __func__);
 
-	info = g_new(GtkIMContextInfo, 1);
-	info->context_id = g_strdup("lmp-im");
-	info->context_name = g_strdup("Little Pudding Input Method");
-	info->domain = g_strdup("gtk+");
-	info->domain_dirname = g_strdup("");
-	info->default_locales = g_strdup("");
-
-	*contexts = (const GtkIMContextInfo **)&info;
-	*n_contexts = 1;
+	*contexts = info_list;
+	*n_contexts = G_N_ELEMENTS(info_list);
 }
 
 GtkIMContext *im_module_create(const gchar *context_id)
 {
-	fprintf(stderr, "%s : %s\n", __FILE__, __func__);
+	//fprintf(stderr, "%s : %s %s\n", __FILE__, __func__, context_id);
 
-
-	if((context_id == NULL) || (context_id[0] == '\0')) 
+	if(strcmp(context_id, "lmp") == 0)
+	{
+		return g_object_new(LMP_IM_TYPE_OBJECT, NULL);
+	}
+	else
 	{
 		return NULL;
 	}
-
-	LmpIMObject *im = g_object_new(LMP_IM_TYPE_OBJECT, NULL);
-	//GTKIMCONTEXTTIM_GET_CLASS(im)->set(im, context_id);
-
-	return GTK_IM_CONTEXT(im);
 }
 

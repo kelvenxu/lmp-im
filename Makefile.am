@@ -1,5 +1,7 @@
-EXTRA_DIST = m4/ChangeLog  libtool lpim.spec
+EXTRA_DIST = lmp-im.spec.in
 
-SUBDIRS = config po src data
+SUBDIRS = po src data
+
+#ACLOCAL_AMFLAGS = -I m4
 
 ACLOCAL_AMFLAGS = -I m4

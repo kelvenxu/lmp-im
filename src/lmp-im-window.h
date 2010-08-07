@@ -53,6 +53,7 @@ typedef struct
 
 GType lmp_im_window_get_type();
 void lmp_im_object_register_type(GTypeModule *type_module);
+void lmp_im_window_register_type(GTypeModule *type_module);
 
 GtkWidget *lmp_im_window_new();
 
