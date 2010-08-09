@@ -1,3 +1,8 @@
+2010-08-09  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* boldquot.sed: New file, from gettext-0.17.
+	* quot.sed: New file, from gettext-0.17.
+
 2010-08-07  gettextize  <bug-gnu-gettext@gnu.org>
 
 	* Makefile.in.in: New file, from gettext-0.17.

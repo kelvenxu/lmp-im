@@ -1,4 +1,4 @@
-EXTRA_DIST = lmp-im.spec.in
+EXTRA_DIST = config.rpath  lmp-im.spec.in
 
 SUBDIRS = po src data
 
