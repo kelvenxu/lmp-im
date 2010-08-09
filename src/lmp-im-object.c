@@ -110,7 +110,18 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 
 	if(event->type == GDK_KEY_RELEASE && event->keyval == GDK_Shift_L && priv->old_keyval == GDK_Shift_L)
 	{
+		lmp_im_window_clear(LMP_IM_WINDOW(priv->im_window));
+		gtk_widget_hide(priv->im_window);
+
 		priv->english_mode = !priv->english_mode;
+	}
+
+	if(event->type == GDK_KEY_PRESS && event->keyval == GDK_Escape)
+	{
+		lmp_im_window_clear(LMP_IM_WINDOW(priv->im_window));
+		gtk_widget_hide(priv->im_window);
+
+		priv->english_mode = TRUE;
 	}
 
 	if(event->type != GDK_KEY_PRESS) 
@@ -122,11 +133,17 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 
 	if(priv->english_mode)
 	{
-		if(event->keyval == GDK_BackSpace)
-			return FALSE;
-
-		lmp_im_object_send_keyval(im, event);
-		return FALSE;
+		switch(event->keyval)
+		{
+			case GDK_BackSpace:
+			case GDK_Escape:
+			case GDK_Return:
+			case GDK_Tab:
+				return FALSE;
+			default:
+				lmp_im_object_send_keyval(im, event);
+				return TRUE;
+		}
 	}
 
 	if(((event->state & GDK_LOCK_MASK) && (!(event->state & GDK_SHIFT_MASK))) ||
@@ -186,7 +203,7 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 		else
 		{
 			lmp_im_object_send_keyval(im, event);
-			return FALSE;
+			return TRUE;
 		}
 	}
 	else if(event->keyval == GDK_space)
@@ -264,7 +281,6 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 		{
 			return FALSE;
 		}
-
 	}
 	else if((event->keyval >= GDK_a) && 
 					(event->keyval <= GDK_z) && 
