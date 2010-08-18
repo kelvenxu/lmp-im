@@ -408,7 +408,7 @@ lmp_im_object_init(LmpIMObject *self)
 	gtk_im_context_set_use_preedit(GTK_IM_CONTEXT(self), FALSE);
 	//fprintf(stderr, "%s : %s end\n", __FILE__, __func__);
 
-	priv->english_mode = FALSE;
+	priv->english_mode = TRUE; //输入法默认不应开启
 	priv->old_keyval = 0;
 
 	db_open(DATADIR"/wubi.db");
