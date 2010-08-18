@@ -115,8 +115,7 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 
 		priv->english_mode = !priv->english_mode;
 	}
-
-	if(event->type == GDK_KEY_PRESS && event->keyval == GDK_Escape)
+	else if(event->type == GDK_KEY_PRESS && event->keyval == GDK_Escape)
 	{
 		lmp_im_window_clear(LMP_IM_WINDOW(priv->im_window));
 		gtk_widget_hide(priv->im_window);
@@ -124,21 +123,44 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 		priv->english_mode = TRUE;
 	}
 
+	if(event->type == GDK_KEY_PRESS)
+		priv->old_keyval = event->keyval;
+
+	if(priv->english_mode)
+		return FALSE;
+
 	if(event->type != GDK_KEY_PRESS) 
 	{
 		return FALSE;
 	}
 
-	priv->old_keyval = event->keyval;
-
 	if(priv->english_mode)
 	{
+		switch(event->state)
+		{
+			case GDK_SHIFT_MASK:
+			case GDK_LOCK_MASK:
+			case GDK_CONTROL_MASK:
+				return FALSE;
+			default:
+				break;
+		}
+
 		switch(event->keyval)
 		{
 			case GDK_BackSpace:
 			case GDK_Escape:
 			case GDK_Return:
 			case GDK_Tab:
+			case GDK_Home:
+			case GDK_Left:
+			case GDK_Up:
+			case GDK_Right:
+			case GDK_Down:
+			case GDK_Page_Up:
+			case GDK_Page_Down:
+			case GDK_End:
+			case GDK_Begin:
 				return FALSE;
 			default:
 				lmp_im_object_send_keyval(im, event);
@@ -287,6 +309,7 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 					(!(event->state & GDK_SHIFT_MASK)) &&
 					(!(event->state & GDK_CONTROL_MASK)))
 	{
+		lmp_im_window_show(LMP_IM_WINDOW(priv->im_window));
 		lmp_im_window_append_code_char(LMP_IM_WINDOW(priv->im_window), event->keyval);
 		const gchar *code = lmp_im_window_get_code(LMP_IM_WINDOW(priv->im_window));
 		if(code)
