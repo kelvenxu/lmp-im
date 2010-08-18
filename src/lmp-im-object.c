@@ -126,8 +126,8 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 	if(event->type == GDK_KEY_PRESS)
 		priv->old_keyval = event->keyval;
 
-	if(priv->english_mode)
-		return FALSE;
+	//if(priv->english_mode)
+	//	return FALSE;
 
 	if(event->type != GDK_KEY_PRESS) 
 	{
@@ -136,6 +136,20 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 
 	if(priv->english_mode)
 	{
+		//if(event->state)
+		//	return FALSE;
+
+		g_print("state %X\n", event->state);
+		if(event->state & GDK_SHIFT_MASK)
+			return FALSE;
+
+		if(event->state & GDK_LOCK_MASK)
+			return FALSE;
+
+		if(event->state & GDK_CONTROL_MASK)
+			return FALSE;
+
+#if 0
 		switch(event->state)
 		{
 			case GDK_SHIFT_MASK:
@@ -145,6 +159,7 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 			default:
 				break;
 		}
+#endif
 
 		switch(event->keyval)
 		{
