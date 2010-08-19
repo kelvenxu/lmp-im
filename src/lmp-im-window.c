@@ -44,6 +44,7 @@ struct _LmpIMWindowPrivate
 	GPtrArray *cand_arr;
 
 	gint cand_page;
+	gint cand_page_num;
 };
 
 enum
@@ -95,6 +96,9 @@ lmp_im_window_init(LmpIMWindow *self)
 	priv->code_str = g_string_new("");
 	priv->cand_str = g_string_new("");
 	priv->cand_arr = NULL;
+
+	priv->cand_page = 0;
+	priv->cand_page_num = 0;
 }
 
 static void
@@ -186,6 +190,72 @@ lmp_im_window_set_candidate(LmpIMWindow *self, GPtrArray *arr)
 	gtk_label_set_text(GTK_LABEL(priv->cand_label), priv->cand_str->str);
 
 	priv->cand_page = 0;
+	priv->cand_page_num = priv->cand_arr->len / CANDIDATE_NUM;
+
+	if(priv->cand_arr->len % CANDIDATE_NUM)
+	{
+		priv->cand_page_num++;
+	}
+}
+
+void 
+lmp_im_window_page_up(LmpIMWindow *self)
+{
+	LmpIMWindowPrivate *priv = LMP_IM_WINDOW_GET_PRIVATE(self);
+
+	if(!priv->cand_arr || priv->cand_arr->len <= 0)
+		return;
+
+	if(priv->cand_page <= 0)
+		return;
+
+	priv->cand_page--;
+
+	gint start = priv->cand_page * CANDIDATE_NUM;
+
+	if(start >= 0 && start < priv->cand_arr->len)
+	{
+		gint i = 0;
+		g_string_erase(priv->cand_str, 0, -1);
+
+		for(i = priv->cand_page * CANDIDATE_NUM; i < priv->cand_arr->len && i < start + CANDIDATE_NUM; ++i)
+		{
+			CodeInfo *info = g_ptr_array_index(priv->cand_arr, i);
+			g_string_append_printf(priv->cand_str, "%d. %s", i - priv->cand_page * CANDIDATE_NUM, info->chinese);
+		}
+
+		gtk_label_set_text(GTK_LABEL(priv->cand_label), priv->cand_str->str);
+	}
+}
+
+void 
+lmp_im_window_page_down(LmpIMWindow *self)
+{
+	LmpIMWindowPrivate *priv = LMP_IM_WINDOW_GET_PRIVATE(self);
+
+	if(!priv->cand_arr || priv->cand_arr->len <= 0)
+		return;
+
+	if(priv->cand_page >= priv->cand_page_num - 1)
+		return;
+
+	priv->cand_page++;
+
+	gint start = priv->cand_page * CANDIDATE_NUM;
+	
+	if(start >= 0 && start < priv->cand_arr->len)
+	{
+		gint i = 0;
+		g_string_erase(priv->cand_str, 0, -1);
+
+		for(i = priv->cand_page * CANDIDATE_NUM; i < priv->cand_arr->len && i < start + CANDIDATE_NUM; ++i)
+		{
+			CodeInfo *info = g_ptr_array_index(priv->cand_arr, i);
+			g_string_append_printf(priv->cand_str, "%d. %s", i - priv->cand_page * CANDIDATE_NUM, info->chinese);
+		}
+
+		gtk_label_set_text(GTK_LABEL(priv->cand_label), priv->cand_str->str);
+	}
 }
 
 const gchar *
@@ -227,6 +297,9 @@ lmp_im_window_clear_candidate(LmpIMWindow *self)
 		g_ptr_array_free(priv->cand_arr, TRUE);
 		priv->cand_arr = NULL;
 	}
+
+	priv->cand_page = 0;
+	priv->cand_page_num = 0;
 }
 
 void

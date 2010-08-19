@@ -272,6 +272,40 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 
 		return TRUE;
 	}
+	else if(event->keyval == GDK_equal) 
+	{
+		// 翻页
+		if(lmp_im_window_has_candidate(LMP_IM_WINDOW(priv->im_window)))
+		{
+			lmp_im_window_page_down(LMP_IM_WINDOW(priv->im_window));
+			return TRUE;
+		}
+		else
+		{
+			lmp_im_window_clear(LMP_IM_WINDOW(priv->im_window));
+			gtk_widget_hide(priv->im_window);
+
+			lmp_im_object_send_keyval(im, event);
+			return TRUE;
+		}
+	}
+	else if(event->keyval == GDK_minus)
+	{
+		// 翻页
+		if(lmp_im_window_has_candidate(LMP_IM_WINDOW(priv->im_window)))
+		{
+			lmp_im_window_page_up(LMP_IM_WINDOW(priv->im_window));
+			return TRUE;
+		}
+		else
+		{
+			lmp_im_window_clear(LMP_IM_WINDOW(priv->im_window));
+			gtk_widget_hide(priv->im_window);
+
+			lmp_im_object_send_keyval(im, event);
+			return TRUE;
+		}
+	}
 	else if(event->keyval == GDK_colon ||
 					event->keyval == GDK_semicolon || 
 					event->keyval == GDK_less ||

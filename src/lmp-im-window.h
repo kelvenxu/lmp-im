@@ -2,7 +2,7 @@
 /*
  * lmp-im-window.h
  *
- * This file is part of ________.
+ * This file is part of lmp-im.
  *
  * Copyright (C) 2010 - kelvenxu <kelvenxu@gmail.com>.
  *
@@ -51,26 +51,32 @@ typedef struct
 	GtkWindowClass parent;
 } LmpIMWindowClass;
 
-GType lmp_im_window_get_type();
-void lmp_im_object_register_type(GTypeModule *type_module);
-void lmp_im_window_register_type(GTypeModule *type_module);
+GType         lmp_im_window_get_type         ();
+void          lmp_im_object_register_type    (GTypeModule *type_module);
+void          lmp_im_window_register_type    (GTypeModule *type_module);
 
-GtkWidget *lmp_im_window_new();
+GtkWidget *   lmp_im_window_new              ();
 
-void lmp_im_window_append_code_char(LmpIMWindow *self, gchar ch);
-void lmp_im_window_clear_code(LmpIMWindow *self);
-void lmp_im_window_clear_candidate(LmpIMWindow *self);
-void lmp_im_window_clear(LmpIMWindow *self);
-const gchar * lmp_im_window_get_code(LmpIMWindow *self);
-int lmp_im_window_backspace(LmpIMWindow *self);
-void lmp_im_window_set_candidate(LmpIMWindow *self, GPtrArray *arr);
-const gchar *lmp_im_window_candidate_index(LmpIMWindow *self, gint index);
-gboolean lmp_im_window_has_code(LmpIMWindow *self);
-gboolean lmp_im_window_has_candidate(LmpIMWindow *self);
-void lmp_im_window_hide(LmpIMWindow *self);
-void lmp_im_window_show(LmpIMWindow *self);
-void lmp_im_window_move(LmpIMWindow *self, int x, int y);
+void          lmp_im_window_clear_code       (LmpIMWindow *self);
+void          lmp_im_window_clear_candidate  (LmpIMWindow *self);
+void          lmp_im_window_clear            (LmpIMWindow *self);
 
+int           lmp_im_window_backspace        (LmpIMWindow *self);
+
+void          lmp_im_window_set_candidate    (LmpIMWindow *self, GPtrArray *arr);
+const gchar * lmp_im_window_candidate_index  (LmpIMWindow *self, gint index);
+
+void          lmp_im_window_append_code_char (LmpIMWindow *self, gchar ch);
+const gchar * lmp_im_window_get_code         (LmpIMWindow *self);
+gboolean      lmp_im_window_has_code         (LmpIMWindow *self);
+gboolean      lmp_im_window_has_candidate    (LmpIMWindow *self);
+
+void lmp_im_window_hide      (LmpIMWindow *self);
+void lmp_im_window_show      (LmpIMWindow *self);
+void lmp_im_window_move      (LmpIMWindow *self, int x, int y);
+
+void lmp_im_window_page_up   (LmpIMWindow *self);
+void lmp_im_window_page_down (LmpIMWindow *self);
 
 G_END_DECLS
 #endif /*__LMP_IM_WINDOW_H__ */
