@@ -1,8 +1,8 @@
 /* vi: set sw=4 ts=4: */
 /*
- * readfile.c
+ * wubi-table.c
  *
- * This file is part of ________.
+ * This file is part of lmp-im.
  *
  * Copyright (C) 2010 - kelvenxu <kelvenxu@gmail.com>.
  *
@@ -25,7 +25,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "database.h"
+#include "lmp-im-db.h"
 
 enum {
 	LINE_CHARS = 256
@@ -43,7 +43,9 @@ int main(int argc, char *argv[])
 
 	while(!feof(fp))
 	{
-		fgets(line, LINE_CHARS - 1, fp);
+		if(fgets(line, LINE_CHARS - 1, fp) == NULL)
+			break;
+
 		//printf("line: %s\n", line);
 		sscanf(line, "%s %s %d", code, character, &freq);
 		//printf("%s %s %d\n", code, character, freq);

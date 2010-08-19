@@ -7,6 +7,7 @@
 
 static sqlite3 *handle;
 static char* table_name = "wubi_all";
+static char* pinyin_table_name = "pinyin_all";
 
 #if 0
 static gboolean
@@ -65,6 +66,20 @@ db_open(const char *filename)
 		}
 	}
 
+	cmd = g_strdup_printf("create table %s (code TEXT, chinese TEXT, freq INT)", pinyin_table_name);
+
+	ret = sqlite3_exec(handle, cmd, NULL, NULL, &err);
+	g_free(cmd);
+
+	if(ret != SQLITE_OK)
+	{
+		if(err)
+		{
+			g_print("database error: %s\n", err);
+			sqlite3_free(err);
+		}
+	}
+
 	return 0;
 }
 
@@ -80,6 +95,36 @@ db_insert(CodeInfo *info)
 
 	cmd = g_strdup_printf("insert into %s (code, chinese, freq) values('%s', '%s', '%d')", 
 			table_name, 
+			info->code, 
+			info->chinese,
+			info->freq);
+
+	ret = sqlite3_exec(handle, cmd, NULL, NULL, &err);
+	if(ret != SQLITE_OK)
+	{
+		if(err)
+		{
+			g_print("database error: %s\n", err);
+			sqlite3_free(err);
+		}
+	}
+
+	g_free(cmd);
+	return ret;
+}
+
+int 
+db_pinyin_insert(CodeInfo *info)
+{
+	char *cmd;
+	int ret;
+	char *err;
+
+	if(!info)
+		return -1;
+
+	cmd = g_strdup_printf("insert into %s (code, chinese, freq) values('%s', '%s', '%d')", 
+			pinyin_table_name, 
 			info->code, 
 			info->chinese,
 			info->freq);

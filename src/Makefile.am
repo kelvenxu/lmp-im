@@ -20,8 +20,14 @@ im_lmp_la_LIBADD = @GTK2_LIBS@ -lsqlite3
 
 bin_SCRIPTS = lmp-im-config
 
-noinst_PROGRAMS = test-view
+noinst_PROGRAMS = test-view wubi-table pinyin-table
 
 test_view_SOURCES = test-view.c
 test_view_LDADD = $(LDADDS)
+
+pinyin_table_SOURCES = pinyin-table.c lmp-im-db.c
+pinyin_table_LDADD = $(LDADDS) -lsqlite3
+
+wubi_table_SOURCES = wubi-table.c lmp-im-db.c
+wubi_table_LDADD = $(LDADDS) -lsqlite3
 
