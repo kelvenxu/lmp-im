@@ -198,7 +198,7 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 			const gchar *code = lmp_im_window_get_code(LMP_IM_WINDOW(priv->im_window));
 			if(code && strlen(code) > 0)
 			{
-				GPtrArray *array = db_query2(code);
+				GPtrArray *array = db_query_wubi(code);
 				if(array && array->len > 0)
 				{
 					lmp_im_window_set_candidate(LMP_IM_WINDOW(priv->im_window), array);
@@ -329,7 +329,16 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 		const gchar *code = lmp_im_window_get_code(LMP_IM_WINDOW(priv->im_window));
 		if(code)
 		{
-			GPtrArray *array = db_query2(code);
+			GPtrArray *array = NULL;
+			if(code[0] == 'z')
+			{
+				array = db_query_pinyin(&(code[1]));
+			}
+			else
+			{
+				array = db_query_wubi(code);
+			}
+
 			if(array && array->len > 0)
 			{
 				lmp_im_window_show(LMP_IM_WINDOW(priv->im_window));

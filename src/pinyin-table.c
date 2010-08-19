@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
 		info.chinese = character;
 		info.freq = 0;
 
-		db_pinyin_insert(&info);
+		db_insert(DB_TABLE_PINYIN, &info);
 	}
 
 	db_close();

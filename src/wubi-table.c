@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
 		info.code = code;
 		info.chinese = character;
 		info.freq = freq;
-		db_insert(&info);
+		db_insert(DB_TABLE_WUBI, &info);
 	}
 
 	db_close();

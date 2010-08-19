@@ -6,26 +6,23 @@
 #include <string.h>
 
 static sqlite3 *handle;
-static char* table_name = "wubi_all";
+static char* wubi_table_name = "wubi_all";
 static char* pinyin_table_name = "pinyin_all";
 
-#if 0
-static gboolean
-db_table_exist()
+gboolean
+db_table_exist(const char *table_name)
 {
-	int ret;
 	char *err;
-	char *cmd;
 
-	// 判断表是否存在
-	cmd = g_strdup_printf("select * from sqlite_master where type = 'table' and name = '%s'", table_name);
-	ret = sqlite3_exec(handle, cmd, NULL, NULL, &err);
+	char *cmd = g_strdup_printf("select * from sqlite_master where type = 'table' and name = '%s'", table_name);
+	int ret = sqlite3_exec(handle, cmd, NULL, NULL, &err);
 	g_free(cmd);
 
 	if(ret == SQLITE_OK && err == NULL)
-		return 0;
+		return TRUE;
+	else
+		return FALSE;
 }
-#endif
 
 int
 db_open(const char *filename)
@@ -41,159 +38,122 @@ db_open(const char *filename)
 		return -1;
 	}
 
-#if 0
-	// 判断表是否存在
-	cmd = g_strdup_printf("select * from sqlite_master where type = 'table' and name = '%s'", table_name);
-	ret = sqlite3_exec(handle, cmd, NULL, NULL, &err);
-	g_free(cmd);
-
-	if(ret == SQLITE_OK && err == NULL)
-		return 0;
-#endif
-
-	// 如果表不存在，就先创建表
-	cmd = g_strdup_printf("create table %s (code TEXT, chinese TEXT, freq INT)", table_name);
-
-	ret = sqlite3_exec(handle, cmd, NULL, NULL, &err);
-	g_free(cmd);
-
-	if(ret != SQLITE_OK)
-	{
-		if(err)
-		{
-			g_print("database error: %s\n", err);
-			sqlite3_free(err);
-		}
-	}
-
-	cmd = g_strdup_printf("create table %s (code TEXT, chinese TEXT, freq INT)", pinyin_table_name);
-
-	ret = sqlite3_exec(handle, cmd, NULL, NULL, &err);
-	g_free(cmd);
-
-	if(ret != SQLITE_OK)
-	{
-		if(err)
-		{
-			g_print("database error: %s\n", err);
-			sqlite3_free(err);
-		}
-	}
-
 	return 0;
 }
 
-int 
-db_insert(CodeInfo *info)
+void
+db_close()
 {
-	char *cmd;
-	int ret;
+	if(handle)
+	{
+		sqlite3_close(handle);
+		handle = NULL;
+	}
+}
+
+gboolean 
+db_table_create(const char *table_name)
+{
+	char *err;
+
+	// 如果表不存在，就先创建表
+	char *cmd = g_strdup_printf("create table %s (code TEXT, chinese TEXT, freq INT)", table_name);
+
+	int ret = sqlite3_exec(handle, cmd, NULL, NULL, &err);
+	g_free(cmd);
+
+	if(ret != SQLITE_OK)
+	{
+		if(err)
+		{
+			g_print("database error: %s\n", err);
+			sqlite3_free(err);
+			return FALSE;
+		}
+	}
+
+	return TRUE;
+}
+
+gboolean
+db_insert(const char *table_name, CodeInfo *info)
+{
 	char *err;
 
 	if(!info)
-		return -1;
+		return FALSE;
 
-	cmd = g_strdup_printf("insert into %s (code, chinese, freq) values('%s', '%s', '%d')", 
+	char *cmd = g_strdup_printf("insert into %s (code, chinese, freq) values('%s', '%s', '%d')", 
 			table_name, 
 			info->code, 
 			info->chinese,
 			info->freq);
 
-	ret = sqlite3_exec(handle, cmd, NULL, NULL, &err);
+	int ret = sqlite3_exec(handle, cmd, NULL, NULL, &err);
 	if(ret != SQLITE_OK)
 	{
 		if(err)
 		{
 			g_print("database error: %s\n", err);
 			sqlite3_free(err);
+			return FALSE;
 		}
 	}
 
 	g_free(cmd);
-	return ret;
+	return TRUE;
 }
 
-int 
-db_pinyin_insert(CodeInfo *info)
+gboolean
+db_delete(const char *table_name, CodeInfo *info)
 {
-	char *cmd;
-	int ret;
 	char *err;
 
 	if(!info)
-		return -1;
+		return FALSE;
 
-	cmd = g_strdup_printf("insert into %s (code, chinese, freq) values('%s', '%s', '%d')", 
-			pinyin_table_name, 
-			info->code, 
-			info->chinese,
-			info->freq);
+	char *cmd = g_strdup_printf("delete from %s where chinese = '%s'", table_name, info->chinese);
 
-	ret = sqlite3_exec(handle, cmd, NULL, NULL, &err);
+	int ret = sqlite3_exec(handle, cmd, NULL, NULL, &err);
+	g_free(cmd);
+
 	if(ret != SQLITE_OK)
 	{
 		if(err)
 		{
 			g_print("database error: %s\n", err);
 			sqlite3_free(err);
+			return FALSE;
 		}
 	}
 
-	g_free(cmd);
-	return ret;
+	return TRUE;
 }
 
-int
-db_delete(CodeInfo *info)
+gboolean
+db_delete_all(const char *table_name)
 {
-	char *cmd;
-	int ret;
 	char *err;
 
-	if(!info)
-		return -1;
+	char *cmd = g_strdup_printf("delete from %s", table_name);
+	int ret = sqlite3_exec(handle, cmd, NULL, NULL, &err);
+	g_free(cmd);
 
-	cmd = g_strdup_printf("delete from %s where chinese = '%s'", table_name, info->chinese);
-
-	ret = sqlite3_exec(handle, cmd, NULL, NULL, &err);
 	if(ret != SQLITE_OK)
 	{
 		if(err)
 		{
 			g_print("database error: %s\n", err);
 			sqlite3_free(err);
+			return FALSE;
 		}
 	}
 
-	g_free(cmd);
-	return ret;
+	return TRUE;
 }
 
 int
-db_delete_all()
-{
-	char *cmd;
-	int ret;
-	char *err;
-
-	cmd = g_strdup_printf("delete from %s", table_name);
-
-	ret = sqlite3_exec(handle, cmd, NULL, NULL, &err);
-	if(ret != SQLITE_OK)
-	{
-		if(err)
-		{
-			g_print("database error: %s\n", err);
-			sqlite3_free(err);
-		}
-	}
-
-	g_free(cmd);
-	return ret;
-}
-
-int
-db_query(const char *query, DBQueryCallback callback, gpointer user_data)
+db_query(const char *table_name, const char *query, DBQueryCallback callback, gpointer user_data)
 {
 	char *cmd;
 	char *err;
@@ -220,29 +180,21 @@ db_query(const char *query, DBQueryCallback callback, gpointer user_data)
 }
 
 GPtrArray *
-db_query2(const char *code)
+db_query_wubi(const char *code)
 {
-	char *cmd;
-	//char *err;
-	int ret;
-
 	if(!code)
 		return NULL;
 
-	//cmd = g_strdup_printf("select * from %s where code like '%%%s%%'\n", table_name, code);
-	cmd = g_strdup_printf("select * from %s where code like '%s%%'\n", table_name, code);
+	char *cmd = g_strdup_printf("select * from %s where code like '%s%%'\n", wubi_table_name, code);
 
 	sqlite3_stmt *stmt;
 	sqlite3_prepare_v2(handle, cmd, strlen(cmd), &stmt, NULL);
 
-	//int cols;
-	//char **value;
-	//char **col_name;
 	GPtrArray *array = g_ptr_array_new();
 
 	g_ptr_array_set_free_func(array, (GDestroyNotify)g_free);
 
-	ret = sqlite3_step(stmt);
+	int ret = sqlite3_step(stmt);
 
 	while(ret == SQLITE_ROW)
 	{
@@ -258,8 +210,6 @@ db_query2(const char *code)
 
 		g_ptr_array_add(array, info);
 
-		//g_print("chinese: %s\n", chinese);
-
 		ret = sqlite3_step(stmt);
 	}
 
@@ -268,9 +218,51 @@ db_query2(const char *code)
 	return array;
 }
 
-void
-db_close()
+GPtrArray *
+db_query_pinyin(const char *code)
 {
-	sqlite3_close(handle);
+	if(!code)
+		return NULL;
+
+	char *cmd = g_strdup_printf("select * from %s where code = '%s'\n", pinyin_table_name, code);
+
+	sqlite3_stmt *stmt;
+	sqlite3_prepare_v2(handle, cmd, strlen(cmd), &stmt, NULL);
+
+	GPtrArray *array = g_ptr_array_new();
+	g_ptr_array_set_free_func(array, (GDestroyNotify)g_free);
+
+	int ret = sqlite3_step(stmt);
+
+	while(ret == SQLITE_ROW)
+	{
+		const unsigned char *code = sqlite3_column_text(stmt, 0);
+		const unsigned char *chinese = sqlite3_column_text(stmt, 1);
+
+		gchar *p = (unsigned char *)chinese;
+		gchar utf8_char[8];
+		while(p && (*p != '\0'))
+		{
+			gunichar c = g_utf8_get_char(p);
+			memset(utf8_char, 0, 8);
+			g_unichar_to_utf8(c, utf8_char);
+
+			CodeInfo *info = g_new0(CodeInfo, 1);
+			info->code = g_strdup(code);
+			info->chinese = g_strdup(utf8_char);
+			info->freq = 0;
+			g_ptr_array_add(array, info);
+
+			p = g_utf8_next_char(p);
+		}
+
+		//g_print("chinese: %s\n", chinese);
+
+		ret = sqlite3_step(stmt);
+	}
+
+	sqlite3_finalize(stmt);
+
+	return array;
 }
 
