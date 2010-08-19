@@ -136,30 +136,30 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 
 	if(priv->english_mode)
 	{
-		//if(event->state)
-		//	return FALSE;
-
-		g_print("state %X\n", event->state);
-		if(event->state & GDK_SHIFT_MASK)
+		// 注意顺序不能变,先判断CONTROL_MASK, 最后才是SHIFT_MASK
+		if(event->state & GDK_CONTROL_MASK)
+		{
+			g_print("ctrl state %X\n", event->state);
 			return FALSE;
+		}
+
+		// alt key
+		if(event->state & GDK_MOD1_MASK)
+		{
+			return FALSE;
+		}
 
 		if(event->state & GDK_LOCK_MASK)
-			return FALSE;
-
-		if(event->state & GDK_CONTROL_MASK)
-			return FALSE;
-
-#if 0
-		switch(event->state)
 		{
-			case GDK_SHIFT_MASK:
-			case GDK_LOCK_MASK:
-			case GDK_CONTROL_MASK:
-				return FALSE;
-			default:
-				break;
+			g_print("lock state %X\n", event->state);
+			return FALSE;
 		}
-#endif
+
+		if(event->state & GDK_SHIFT_MASK)
+		{
+			lmp_im_object_send_keyval(im, event);
+			return TRUE;
+		}
 
 		switch(event->keyval)
 		{
@@ -181,11 +181,17 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 				lmp_im_object_send_keyval(im, event);
 				return TRUE;
 		}
+
+		return FALSE;
 	}
 
+	// 对于大写的情况
 	if(((event->state & GDK_LOCK_MASK) && (!(event->state & GDK_SHIFT_MASK))) ||
 		((!(event->state & GDK_LOCK_MASK)) && (event->state & GDK_SHIFT_MASK)))
 	{
+		lmp_im_window_clear(LMP_IM_WINDOW(priv->im_window));
+		gtk_widget_hide(priv->im_window);
+
 		lmp_im_object_send_keyval(im, event);
 		return TRUE;
 	}
@@ -299,10 +305,13 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 					event->keyval == GDK_braceleft ||
 					event->keyval == GDK_bar ||
 					event->keyval == GDK_braceright ||
-					event->keyval == GDK_asciitilde 
-					)
+					event->keyval == GDK_asciitilde)
 	{
+		lmp_im_window_clear(LMP_IM_WINDOW(priv->im_window));
+		gtk_widget_hide(priv->im_window);
+
 		lmp_im_object_send_keyval(im, event);
+		return TRUE;
 	}
 	else if(event->keyval == GDK_Return)
 	{
@@ -330,7 +339,7 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 		if(code)
 		{
 			GPtrArray *array = NULL;
-			if(code[0] == 'z')
+			if(code[0] == 'z') // 当是z开头时,输入拼音查询
 			{
 				array = db_query_pinyin(&(code[1]));
 			}
@@ -357,21 +366,18 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 static void     
 lmp_im_object_focus_in(GtkIMContext *context)
 {
-	fprintf(stderr, "%s : %s\n", __FILE__, __func__);
-
 	LmpIMObject *im = LMP_IM_OBJECT(context);
 	LmpIMObjectPrivate *priv = LMP_IM_OBJECT_GET_PRIVATE(im);
 
 	if(lmp_im_window_has_code(LMP_IM_WINDOW(priv->im_window)))
-		//gtk_widget_show(priv->im_window);
+	{
 		lmp_im_window_show(LMP_IM_WINDOW(priv->im_window));
+	}
 }
 
 static void     
 lmp_im_object_focus_out(GtkIMContext *context)
 {
-	fprintf(stderr, "%s : %s\n", __FILE__, __func__);
-
 	LmpIMObject *im = LMP_IM_OBJECT(context);
 	LmpIMObjectPrivate *priv = LMP_IM_OBJECT_GET_PRIVATE(im);
 
@@ -381,13 +387,11 @@ lmp_im_object_focus_out(GtkIMContext *context)
 static void     
 lmp_im_object_reset(GtkIMContext *context)
 {
-	//fprintf(stderr, "%s : %s\n", __FILE__, __func__);
 }
 
 static void     
 lmp_im_object_set_cursor_location(GtkIMContext *context, GdkRectangle *area)
 {
-	//fprintf(stderr, "%s : %s\n", __FILE__, __func__);
 	LmpIMObject *im = LMP_IM_OBJECT(context);
 	LmpIMObjectPrivate *priv = LMP_IM_OBJECT_GET_PRIVATE(im);
 
