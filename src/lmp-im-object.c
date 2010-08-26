@@ -136,6 +136,22 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 
 	if(priv->english_mode)
 	{
+		if(event->keyval == GDK_BackSpace || 
+			 event->keyval == GDK_Escape ||
+			 event->keyval == GDK_Return || 
+			 event->keyval == GDK_Tab ||
+			 event->keyval == GDK_Home ||
+			 event->keyval == GDK_Left ||
+			 event->keyval == GDK_Right ||
+			 event->keyval == GDK_Down ||
+			 event->keyval == GDK_Page_Up ||
+			 event->keyval == GDK_Page_Down ||
+			 event->keyval == GDK_End ||
+			 event->keyval == GDK_Begin)
+		{
+			return FALSE;
+		}
+
 		// 注意顺序不能变,先判断CONTROL_MASK, 最后才是SHIFT_MASK
 		if(event->state & GDK_CONTROL_MASK)
 		{
@@ -161,6 +177,7 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 			return TRUE;
 		}
 
+#if 0
 		switch(event->keyval)
 		{
 			case GDK_BackSpace:
@@ -181,6 +198,26 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 				lmp_im_object_send_keyval(im, event);
 				return TRUE;
 		}
+#endif
+
+		lmp_im_object_send_keyval(im, event);
+		return TRUE;
+
+		return FALSE;
+	}
+
+	if(event->keyval == GDK_Tab || 
+			event->keyval == GDK_Home ||
+			event->keyval == GDK_Left ||
+			event->keyval == GDK_Right ||
+			event->keyval == GDK_Down ||
+			event->keyval == GDK_Page_Up ||
+			event->keyval == GDK_Page_Down ||
+			event->keyval == GDK_End ||
+			event->keyval == GDK_Begin)
+	{
+		lmp_im_window_clear(LMP_IM_WINDOW(priv->im_window));
+		gtk_widget_hide(priv->im_window);
 
 		return FALSE;
 	}
@@ -344,8 +381,9 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 		lmp_im_window_clear(LMP_IM_WINDOW(priv->im_window));
 		gtk_widget_hide(priv->im_window);
 
-		lmp_im_object_send_keyval(im, event);
-		return TRUE;
+		//lmp_im_object_send_keyval(im, event);
+		//return TRUE;
+		return FALSE;
 	}
 	else if(event->keyval == GDK_Return)
 	{
