@@ -211,6 +211,7 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 			event->keyval == GDK_Left ||
 			event->keyval == GDK_Right ||
 			event->keyval == GDK_Down ||
+			event->keyval == GDK_Up ||
 			event->keyval == GDK_Page_Up ||
 			event->keyval == GDK_Page_Down ||
 			event->keyval == GDK_End ||
