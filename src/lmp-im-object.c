@@ -178,33 +178,8 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 			return TRUE;
 		}
 
-#if 0
-		switch(event->keyval)
-		{
-			case GDK_BackSpace:
-			case GDK_Escape:
-			case GDK_Return:
-			case GDK_Tab:
-			case GDK_Home:
-			case GDK_Left:
-			case GDK_Up:
-			case GDK_Right:
-			case GDK_Down:
-			case GDK_Page_Up:
-			case GDK_Page_Down:
-			case GDK_End:
-			case GDK_Begin:
-				return FALSE;
-			default:
-				lmp_im_object_send_keyval(im, event);
-				return TRUE;
-		}
-#endif
-
 		lmp_im_object_send_keyval(im, event);
 		return TRUE;
-
-		return FALSE;
 	}
 
 	if(event->keyval == GDK_Tab || 
@@ -383,9 +358,8 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 		lmp_im_window_clear(LMP_IM_WINDOW(priv->im_window));
 		gtk_widget_hide(priv->im_window);
 
-		//lmp_im_object_send_keyval(im, event);
-		//return TRUE;
-		return FALSE;
+		lmp_im_object_send_keyval(im, event);
+		return TRUE;
 	}
 	else if(event->keyval == GDK_Return)
 	{
