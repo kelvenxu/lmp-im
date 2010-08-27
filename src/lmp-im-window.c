@@ -45,6 +45,9 @@ struct _LmpIMWindowPrivate
 
 	gint cand_page;
 	gint cand_page_num;
+
+	gint position_x;
+	gint position_y;
 };
 
 enum
@@ -99,6 +102,9 @@ lmp_im_window_init(LmpIMWindow *self)
 
 	priv->cand_page = 0;
 	priv->cand_page_num = 0;
+
+	priv->position_x = 0;
+	priv->position_y = 0;
 }
 
 static void
@@ -319,8 +325,12 @@ lmp_im_window_hide(LmpIMWindow *self)
 void 
 lmp_im_window_show(LmpIMWindow *self)
 {
+	LmpIMWindowPrivate *priv = LMP_IM_WINDOW_GET_PRIVATE(self);
+
 	gtk_window_resize(GTK_WINDOW(self), 1, 1);
+
 	gtk_widget_show(GTK_WIDGET(self));
+	gtk_window_move(GTK_WINDOW(self), priv->position_x, priv->position_y);
 }
 
 void
@@ -331,6 +341,8 @@ lmp_im_window_move(LmpIMWindow *self, int x, int y)
 	int self_w;
 	int self_h;
 
+	LmpIMWindowPrivate *priv = LMP_IM_WINDOW_GET_PRIVATE(self);
+
 	GdkWindow *root_window = gdk_get_default_root_window();
 	gdk_drawable_get_size(GDK_DRAWABLE(root_window), &root_w, &root_h);
 	gtk_window_get_size(GTK_WINDOW(self), &self_w, &self_h);
@@ -340,7 +352,10 @@ lmp_im_window_move(LmpIMWindow *self, int x, int y)
 		x = root_w - self_w;
 	}
 
-	gtk_window_move(GTK_WINDOW(self), x, y + 4);
+	priv->position_x = x;
+	priv->position_y = y + 4;
+	gtk_window_move(GTK_WINDOW(self), priv->position_x, priv->position_y);
+	
 }
 
 static GType im_win_type = 0;

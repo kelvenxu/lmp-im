@@ -435,6 +435,7 @@ lmp_im_object_focus_out(GtkIMContext *context)
 static void     
 lmp_im_object_reset(GtkIMContext *context)
 {
+	g_print("object reset\n");
 }
 
 static void     
@@ -461,28 +462,22 @@ static void
 lmp_im_object_dispose(LmpIMObject *self)
 {
 	db_close();
-	fprintf(stderr, "%s : %s\n", __FILE__, __func__);
 }
 
 static void
 lmp_im_object_finalize(LmpIMObject *self)
 {
-	fprintf(stderr, "%s : %s\n", __FILE__, __func__);
 }
 
 static void
 lmp_im_object_init(LmpIMObject *self)
 {
-	//fprintf(stderr, "%s : %s\n", __FILE__, __func__);
-	LmpIMObjectPrivate *priv;// = self->priv;
-
-	priv = LMP_IM_OBJECT_GET_PRIVATE(self);
+	LmpIMObjectPrivate *priv = LMP_IM_OBJECT_GET_PRIVATE(self);
 	
 	priv->client_window = NULL;
 	priv->im_window = lmp_im_window_new();
 
 	gtk_im_context_set_use_preedit(GTK_IM_CONTEXT(self), FALSE);
-	//fprintf(stderr, "%s : %s end\n", __FILE__, __func__);
 
 	priv->english_mode = TRUE; //输入法默认不应开启
 	priv->old_keyval = 0;
@@ -493,7 +488,6 @@ lmp_im_object_init(LmpIMObject *self)
 static void
 lmp_im_object_class_init(LmpIMObjectClass *self_class)
 {
-	//fprintf(stderr, "%s : %s\n", __FILE__, __func__);
 	GObjectClass *object_class = G_OBJECT_CLASS(self_class);
 
 	g_type_class_add_private(self_class, sizeof(LmpIMObjectPrivate));
@@ -503,7 +497,7 @@ lmp_im_object_class_init(LmpIMObjectClass *self_class)
 
 	GTK_IM_CONTEXT_CLASS(self_class)->set_client_window   = lmp_im_object_set_client_window;
 	GTK_IM_CONTEXT_CLASS(self_class)->filter_keypress     = lmp_im_object_filter_keypress;
-	GTK_IM_CONTEXT_CLASS(self_class)->reset               = lmp_im_object_reset;
+	//GTK_IM_CONTEXT_CLASS(self_class)->reset               = lmp_im_object_reset;
 	//GTK_IM_CONTEXT_CLASS(self_class)->get_preedit_string  = lmp_im_object_get_preedit_string;
 	GTK_IM_CONTEXT_CLASS(self_class)->focus_in            = lmp_im_object_focus_in;
 	GTK_IM_CONTEXT_CLASS(self_class)->focus_out           = lmp_im_object_focus_out;
