@@ -187,14 +187,18 @@ db_query_wubi(const char *code)
 
 	char *cmd = g_strdup_printf("select * from %s where code like '%s%%'\n", wubi_table_name, code);
 
-	sqlite3_stmt *stmt;
-	sqlite3_prepare_v2(handle, cmd, strlen(cmd), &stmt, NULL);
+	sqlite3_stmt *stmt = NULL;
+	int ret = sqlite3_prepare_v2(handle, cmd, strlen(cmd), &stmt, NULL);
+	if(ret != SQLITE_OK)
+	{
+		g_print("sqlite3_prepare_v2 failed, return %d\n", ret);
+	}
 
 	GPtrArray *array = g_ptr_array_new();
 
 	g_ptr_array_set_free_func(array, (GDestroyNotify)g_free);
 
-	int ret = sqlite3_step(stmt);
+	ret = sqlite3_step(stmt);
 
 	while(ret == SQLITE_ROW)
 	{
