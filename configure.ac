@@ -14,15 +14,15 @@ AM_PROG_LIBTOOL
 # Checks for GTK+ libraries.
 #AM_PATH_GTK_2_0([2.0.0],,[AC_MSG_ERROR(GTK 2.0.0 or better is required.)])
 
-PKG_CHECK_MODULES(GTK2, [gtk+-2.0 >= 2.8.0])
+PKG_CHECK_MODULES(GTK3, [gtk+-3.0 >= 3.0.0])
 
-#GTK2_CFLAGS="`pkg-config --cflags gtk+-2.0`"
-#GTK2_LIBS="`pkg-config --libs gtk+-2.0`"
+#GTK3_CFLAGS="`pkg-config --cflags gtk+-2.0`"
+#GTK3_LIBS="`pkg-config --libs gtk+-2.0`"
 
-GTK2_BINARY_VERSION="`pkg-config --variable=gtk_binary_version gtk+-2.0`"
-AC_SUBST([GTK2_CFLAGS])
-AC_SUBST([GTK2_LIBS])
-AC_SUBST([GTK2_BINARY_VERSION])
+GTK3_BINARY_VERSION="`pkg-config --variable=gtk_binary_version gtk+-3.0`"
+AC_SUBST([GTK3_CFLAGS])
+AC_SUBST([GTK3_LIBS])
+AC_SUBST([GTK3_BINARY_VERSION])
 
 GETTEXT_PACKAGE=lmp-im
 AC_SUBST(GETTEXT_PACKAGE)

@@ -108,14 +108,14 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 	//fprintf(stderr, "%s : %s\n", __FILE__, __func__);
 	//fprintf(stderr, "state - 0x%X, keyval - 0x%X time %u\n", event->state & GDK_SHIFT_MASK, event->keyval, event->time);
 
-	if(event->type == GDK_KEY_RELEASE && event->keyval == GDK_Shift_L && priv->old_keyval == GDK_Shift_L)
+	if(event->type == GDK_KEY_RELEASE && event->keyval == GDK_KEY_Shift_L && priv->old_keyval == GDK_KEY_Shift_L)
 	{
 		lmp_im_window_clear(LMP_IM_WINDOW(priv->im_window));
 		gtk_widget_hide(priv->im_window);
 
 		priv->english_mode = !priv->english_mode;
 	}
-	else if(event->type == GDK_KEY_PRESS && event->keyval == GDK_Escape)
+	else if(event->type == GDK_KEY_PRESS && event->keyval == GDK_KEY_Escape)
 	{
 		lmp_im_window_clear(LMP_IM_WINDOW(priv->im_window));
 		gtk_widget_hide(priv->im_window);
@@ -136,19 +136,19 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 
 	if(priv->english_mode)
 	{
-		if(event->keyval == GDK_BackSpace || 
-			 event->keyval == GDK_Escape ||
-			 event->keyval == GDK_Return || 
-			 event->keyval == GDK_Tab ||
-			 event->keyval == GDK_Home ||
-			 event->keyval == GDK_Left ||
-			 event->keyval == GDK_Right ||
-			 event->keyval == GDK_Up ||
-			 event->keyval == GDK_Down ||
-			 event->keyval == GDK_Page_Up ||
-			 event->keyval == GDK_Page_Down ||
-			 event->keyval == GDK_End ||
-			 event->keyval == GDK_Begin)
+		if(event->keyval == GDK_KEY_BackSpace || 
+			 event->keyval == GDK_KEY_Escape ||
+			 event->keyval == GDK_KEY_Return || 
+			 event->keyval == GDK_KEY_Tab ||
+			 event->keyval == GDK_KEY_Home ||
+			 event->keyval == GDK_KEY_Left ||
+			 event->keyval == GDK_KEY_Right ||
+			 event->keyval == GDK_KEY_Up ||
+			 event->keyval == GDK_KEY_Down ||
+			 event->keyval == GDK_KEY_Page_Up ||
+			 event->keyval == GDK_KEY_Page_Down ||
+			 event->keyval == GDK_KEY_End ||
+			 event->keyval == GDK_KEY_Begin)
 		{
 			return FALSE;
 		}
@@ -182,16 +182,16 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 		return TRUE;
 	}
 
-	if(event->keyval == GDK_Tab || 
-			event->keyval == GDK_Home ||
-			event->keyval == GDK_Left ||
-			event->keyval == GDK_Right ||
-			event->keyval == GDK_Down ||
-			event->keyval == GDK_Up ||
-			event->keyval == GDK_Page_Up ||
-			event->keyval == GDK_Page_Down ||
-			event->keyval == GDK_End ||
-			event->keyval == GDK_Begin)
+	if(event->keyval == GDK_KEY_Tab || 
+			event->keyval == GDK_KEY_Home ||
+			event->keyval == GDK_KEY_Left ||
+			event->keyval == GDK_KEY_Right ||
+			event->keyval == GDK_KEY_Down ||
+			event->keyval == GDK_KEY_Up ||
+			event->keyval == GDK_KEY_Page_Up ||
+			event->keyval == GDK_KEY_Page_Down ||
+			event->keyval == GDK_KEY_End ||
+			event->keyval == GDK_KEY_Begin)
 	{
 		lmp_im_window_clear(LMP_IM_WINDOW(priv->im_window));
 		gtk_widget_hide(priv->im_window);
@@ -210,7 +210,7 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 		return TRUE;
 	}
 
-	if(event->keyval == GDK_BackSpace)
+	if(event->keyval == GDK_KEY_BackSpace)
 	{
 		if(lmp_im_window_get_code(LMP_IM_WINDOW(priv->im_window)))
 		{
@@ -236,18 +236,18 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 			return FALSE;
 		}
 	}
-	else if(event->keyval == GDK_0 || 
-					event->keyval == GDK_1 ||
-					event->keyval == GDK_2 ||
-					event->keyval == GDK_3 ||
-					event->keyval == GDK_4 ||
-					event->keyval == GDK_5 ||
-					event->keyval == GDK_6 ||
-					event->keyval == GDK_7 ||
-					event->keyval == GDK_8 ||
-					event->keyval == GDK_9)
+	else if(event->keyval == GDK_KEY_0 || 
+					event->keyval == GDK_KEY_1 ||
+					event->keyval == GDK_KEY_2 ||
+					event->keyval == GDK_KEY_3 ||
+					event->keyval == GDK_KEY_4 ||
+					event->keyval == GDK_KEY_5 ||
+					event->keyval == GDK_KEY_6 ||
+					event->keyval == GDK_KEY_7 ||
+					event->keyval == GDK_KEY_8 ||
+					event->keyval == GDK_KEY_9)
 	{
-		gint index = event->keyval - GDK_0;
+		gint index = event->keyval - GDK_KEY_0;
 		if(lmp_im_window_has_candidate(LMP_IM_WINDOW(priv->im_window)))
 		{
 			const gchar *chinese = lmp_im_window_candidate_index(LMP_IM_WINDOW(priv->im_window), index);
@@ -263,7 +263,7 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 			return TRUE;
 		}
 	}
-	else if(event->keyval == GDK_space)
+	else if(event->keyval == GDK_KEY_space)
 	{
 		if(lmp_im_window_has_candidate(LMP_IM_WINDOW(priv->im_window)))
 		{
@@ -286,7 +286,7 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 
 		return TRUE;
 	}
-	else if(event->keyval == GDK_equal) 
+	else if(event->keyval == GDK_KEY_equal) 
 	{
 		// 翻页
 		if(lmp_im_window_has_candidate(LMP_IM_WINDOW(priv->im_window)))
@@ -303,7 +303,7 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 			return TRUE;
 		}
 	}
-	else if(event->keyval == GDK_minus)
+	else if(event->keyval == GDK_KEY_minus)
 	{
 		// 翻页
 		if(lmp_im_window_has_candidate(LMP_IM_WINDOW(priv->im_window)))
@@ -320,40 +320,40 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 			return TRUE;
 		}
 	}
-	else if(event->keyval == GDK_colon ||
-					event->keyval == GDK_semicolon || 
-					event->keyval == GDK_less ||
-					event->keyval == GDK_equal ||
-					event->keyval == GDK_greater ||
-					event->keyval == GDK_question || 
-					event->keyval == GDK_at ||
-					event->keyval == GDK_exclam ||
-					event->keyval == GDK_quotedbl ||
-					event->keyval == GDK_numbersign ||
-					event->keyval == GDK_dollar ||
-					event->keyval == GDK_percent ||
-					event->keyval == GDK_ampersand ||
-					event->keyval == GDK_apostrophe ||
-					event->keyval == GDK_quoteright ||
-					event->keyval == GDK_parenleft ||
-					event->keyval == GDK_parenright ||
-					event->keyval == GDK_asterisk ||
-					event->keyval == GDK_plus ||
-					event->keyval == GDK_comma ||
-					event->keyval == GDK_minus ||
-					event->keyval == GDK_period ||
-					event->keyval == GDK_slash ||
-					event->keyval == GDK_bracketleft ||
-					event->keyval == GDK_backslash ||
-					event->keyval == GDK_bracketright ||
-					event->keyval == GDK_asciicircum ||
-					event->keyval == GDK_underscore ||
-					event->keyval == GDK_grave ||
-					event->keyval == GDK_quoteleft ||
-					event->keyval == GDK_braceleft ||
-					event->keyval == GDK_bar ||
-					event->keyval == GDK_braceright ||
-					event->keyval == GDK_asciitilde)
+	else if(event->keyval == GDK_KEY_colon ||
+					event->keyval == GDK_KEY_semicolon || 
+					event->keyval == GDK_KEY_less ||
+					event->keyval == GDK_KEY_equal ||
+					event->keyval == GDK_KEY_greater ||
+					event->keyval == GDK_KEY_question || 
+					event->keyval == GDK_KEY_at ||
+					event->keyval == GDK_KEY_exclam ||
+					event->keyval == GDK_KEY_quotedbl ||
+					event->keyval == GDK_KEY_numbersign ||
+					event->keyval == GDK_KEY_dollar ||
+					event->keyval == GDK_KEY_percent ||
+					event->keyval == GDK_KEY_ampersand ||
+					event->keyval == GDK_KEY_apostrophe ||
+					event->keyval == GDK_KEY_quoteright ||
+					event->keyval == GDK_KEY_parenleft ||
+					event->keyval == GDK_KEY_parenright ||
+					event->keyval == GDK_KEY_asterisk ||
+					event->keyval == GDK_KEY_plus ||
+					event->keyval == GDK_KEY_comma ||
+					event->keyval == GDK_KEY_minus ||
+					event->keyval == GDK_KEY_period ||
+					event->keyval == GDK_KEY_slash ||
+					event->keyval == GDK_KEY_bracketleft ||
+					event->keyval == GDK_KEY_backslash ||
+					event->keyval == GDK_KEY_bracketright ||
+					event->keyval == GDK_KEY_asciicircum ||
+					event->keyval == GDK_KEY_underscore ||
+					event->keyval == GDK_KEY_grave ||
+					event->keyval == GDK_KEY_quoteleft ||
+					event->keyval == GDK_KEY_braceleft ||
+					event->keyval == GDK_KEY_bar ||
+					event->keyval == GDK_KEY_braceright ||
+					event->keyval == GDK_KEY_asciitilde)
 	{
 		lmp_im_window_clear(LMP_IM_WINDOW(priv->im_window));
 		gtk_widget_hide(priv->im_window);
@@ -361,7 +361,7 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 		lmp_im_object_send_keyval(im, event);
 		return TRUE;
 	}
-	else if(event->keyval == GDK_Return)
+	else if(event->keyval == GDK_KEY_Return)
 	{
 		const gchar *code = lmp_im_window_get_code(LMP_IM_WINDOW(priv->im_window));
 		if(code)
@@ -376,8 +376,8 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 			return FALSE;
 		}
 	}
-	else if((event->keyval >= GDK_a) && 
-					(event->keyval <= GDK_z) && 
+	else if((event->keyval >= GDK_KEY_a) && 
+					(event->keyval <= GDK_KEY_z) && 
 					(!(event->state & GDK_SHIFT_MASK)) &&
 					(!(event->state & GDK_CONTROL_MASK)))
 	{

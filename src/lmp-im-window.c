@@ -344,7 +344,9 @@ lmp_im_window_move(LmpIMWindow *self, int x, int y)
 	LmpIMWindowPrivate *priv = LMP_IM_WINDOW_GET_PRIVATE(self);
 
 	GdkWindow *root_window = gdk_get_default_root_window();
-	gdk_drawable_get_size(GDK_DRAWABLE(root_window), &root_w, &root_h);
+	//gdk_drawable_get_size(GDK_DRAWABLE(root_window), &root_w, &root_h);
+	root_w = gdk_window_get_width(root_window);
+	root_h = gdk_window_get_height(root_window);
 	gtk_window_get_size(GTK_WINDOW(self), &self_w, &self_h);
 
 	if(x + self_w > root_w)

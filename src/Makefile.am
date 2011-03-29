@@ -1,7 +1,7 @@
 
-INCLUDES = @GTK2_CFLAGS@
-LDADDS = @GTK2_LIBS@
-moduledir = $(libdir)/gtk-2.0/@GTK2_BINARY_VERSION@/immodules
+INCLUDES = @GTK3_CFLAGS@
+LDADDS = @GTK3_LIBS@
+moduledir = $(libdir)/gtk-3.0/@GTK3_BINARY_VERSION@/immodules
 
 module_LTLIBRARIES = im-lmp.la
 
@@ -16,7 +16,7 @@ im_lmp_la_SOURCES = \
 
 im_lmp_la_CFLAGS = -g -DDATADIR=\""$(datadir)/lmp-im"\"	
 im_lmp_la_LDFLAGS = -rpath $(moduledir) -avoid-version -module $(no_undefined)
-im_lmp_la_LIBADD = @GTK2_LIBS@ -lsqlite3
+im_lmp_la_LIBADD = @GTK3_LIBS@ -lsqlite3
 
 bin_SCRIPTS = lmp-im-config
 
