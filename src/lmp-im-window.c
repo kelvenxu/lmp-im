@@ -32,6 +32,7 @@
 
 struct _LmpIMWindowPrivate 
 {
+	//GtkWidget *handle;
 	GtkWidget *frame;
 	GtkWidget *vbox;
 	GtkWidget *code_label;
@@ -69,6 +70,7 @@ static void
 lmp_im_window_init(LmpIMWindow *self)
 {
 	LmpIMWindowPrivate *priv = LMP_IM_WINDOW_GET_PRIVATE(self);
+	//priv->handle = gtk_handle_box_new();
 	priv->frame = gtk_frame_new(NULL);
 	priv->vbox = gtk_vbox_new(FALSE, 0);
 	priv->code_label = gtk_label_new("");
@@ -79,7 +81,8 @@ lmp_im_window_init(LmpIMWindow *self)
 	gtk_box_pack_start(GTK_BOX(priv->vbox), priv->sepatator, TRUE, TRUE, 0);
 	gtk_box_pack_start(GTK_BOX(priv->vbox), priv->cand_label, TRUE, TRUE, 1);
 
-	//gtk_container_add(GTK_CONTAINER(self), priv->vbox);
+	//gtk_container_add(GTK_CONTAINER(self), priv->handle);
+	//gtk_container_add(GTK_CONTAINER(priv->handle), priv->frame);
 	gtk_container_add(GTK_CONTAINER(self), priv->frame);
 	gtk_container_add(GTK_CONTAINER(priv->frame), priv->vbox);
 
@@ -89,12 +92,12 @@ lmp_im_window_init(LmpIMWindow *self)
 	gtk_label_set_single_line_mode(GTK_LABEL(priv->code_label), TRUE);
 	gtk_label_set_single_line_mode(GTK_LABEL(priv->cand_label), TRUE);
 
+	//gtk_widget_show(priv->handle);
 	gtk_widget_show(priv->frame);
 	gtk_widget_show(priv->vbox);
 	gtk_widget_show(priv->code_label);
 	gtk_widget_show(priv->cand_label);
 	gtk_widget_show(priv->sepatator);
-
 
 	priv->code_str = g_string_new("");
 	priv->cand_str = g_string_new("");
@@ -190,7 +193,7 @@ lmp_im_window_set_candidate(LmpIMWindow *self, GPtrArray *arr)
 	for(i = 0; i < arr->len && i < CANDIDATE_NUM; ++i)
 	{
 		CodeInfo *info = g_ptr_array_index(arr, i);
-		g_string_append_printf(priv->cand_str, "%d. %s", i, info->chinese);
+		g_string_append_printf(priv->cand_str, "%d. %s ", i, info->chinese);
 	}
 
 	gtk_label_set_text(GTK_LABEL(priv->cand_label), priv->cand_str->str);
@@ -227,7 +230,7 @@ lmp_im_window_page_up(LmpIMWindow *self)
 		for(i = priv->cand_page * CANDIDATE_NUM; i < priv->cand_arr->len && i < start + CANDIDATE_NUM; ++i)
 		{
 			CodeInfo *info = g_ptr_array_index(priv->cand_arr, i);
-			g_string_append_printf(priv->cand_str, "%d. %s", i - priv->cand_page * CANDIDATE_NUM, info->chinese);
+			g_string_append_printf(priv->cand_str, "%d. %s ", i - priv->cand_page * CANDIDATE_NUM, info->chinese);
 		}
 
 		gtk_label_set_text(GTK_LABEL(priv->cand_label), priv->cand_str->str);
@@ -257,7 +260,7 @@ lmp_im_window_page_down(LmpIMWindow *self)
 		for(i = priv->cand_page * CANDIDATE_NUM; i < priv->cand_arr->len && i < start + CANDIDATE_NUM; ++i)
 		{
 			CodeInfo *info = g_ptr_array_index(priv->cand_arr, i);
-			g_string_append_printf(priv->cand_str, "%d. %s", i - priv->cand_page * CANDIDATE_NUM, info->chinese);
+			g_string_append_printf(priv->cand_str, "%d. %s ", i - priv->cand_page * CANDIDATE_NUM, info->chinese);
 		}
 
 		gtk_label_set_text(GTK_LABEL(priv->cand_label), priv->cand_str->str);
