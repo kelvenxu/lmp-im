@@ -25,6 +25,7 @@
 #include "lmp-im-object.h"
 #include "lmp-im-window.h"
 #include "lmp-im-db.h"
+#include "type.h"
 
 #include <gdk/gdkkeysyms.h>
 #include <string.h>
@@ -34,13 +35,15 @@
 #define LMP_IM_OBJECT_GET_PRIVATE(o) \
 	(G_TYPE_INSTANCE_GET_PRIVATE((o), LMP_IM_TYPE_OBJECT, LmpIMObjectPrivate))
 
+
 struct _LmpIMObjectPrivate 
 {
 	GdkWindow *client_window;
 
 	GtkWidget *im_window;
 
-	gboolean english_mode;
+	LmpIMMode mode;
+	//gboolean english_mode;
 	guint old_keyval;
 };
 
@@ -113,14 +116,20 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 		lmp_im_window_clear(LMP_IM_WINDOW(priv->im_window));
 		gtk_widget_hide(priv->im_window);
 
-		priv->english_mode = !priv->english_mode;
+		if(priv->mode == LMP_IM_MODE_ENGLISH)
+			priv->mode = LMP_IM_MODE_WUBI;
+		else
+			priv->mode = LMP_IM_MODE_ENGLISH;
+
+		//priv->english_mode = !priv->english_mode;
 	}
 	else if(event->type == GDK_KEY_PRESS && event->keyval == GDK_KEY_Escape)
 	{
 		lmp_im_window_clear(LMP_IM_WINDOW(priv->im_window));
 		gtk_widget_hide(priv->im_window);
 
-		priv->english_mode = TRUE;
+		//priv->english_mode = TRUE;
+		priv->mode = LMP_IM_MODE_ENGLISH;
 	}
 
 	if(event->type == GDK_KEY_PRESS)
@@ -134,7 +143,8 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 		return FALSE;
 	}
 
-	if(priv->english_mode)
+	//if(priv->english_mode)
+	if(priv->mode == LMP_IM_MODE_ENGLISH)
 	{
 		if(event->keyval == GDK_KEY_BackSpace || 
 			 event->keyval == GDK_KEY_Escape ||
@@ -390,16 +400,26 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 			if(code[0] == 'z') // 当是z开头时,输入拼音查询
 			{
 				array = db_query_pinyin(&(code[1]));
+				priv->mode = LMP_IM_MODE_PINYIN;
+
+				lmp_im_window_set_mode(LMP_IM_WINDOW(priv->im_window), LMP_IM_MODE_PINYIN);
 			}
 			else
 			{
 				array = db_query_wubi(code);
+				priv->mode = LMP_IM_MODE_WUBI;
+
+				lmp_im_window_set_mode(LMP_IM_WINDOW(priv->im_window), LMP_IM_MODE_WUBI);
 			}
 
 			if(array && array->len > 0)
 			{
 				lmp_im_window_show(LMP_IM_WINDOW(priv->im_window));
 				lmp_im_window_set_candidate(LMP_IM_WINDOW(priv->im_window), array);
+			}
+			else
+			{
+				//lmp_im_window_set_no_candidate(LMP_IM_WINDOW(priv->im_window));
 			}
 		}
 	}
@@ -479,7 +499,8 @@ lmp_im_object_init(LmpIMObject *self)
 
 	gtk_im_context_set_use_preedit(GTK_IM_CONTEXT(self), FALSE);
 
-	priv->english_mode = TRUE; //输入法默认不应开启
+	//priv->english_mode = TRUE; //输入法默认不应开启
+	priv->mode = LMP_IM_MODE_ENGLISH;
 	priv->old_keyval = 0;
 
 	db_open(DATADIR"/wubi.db");

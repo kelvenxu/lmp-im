@@ -27,6 +27,7 @@
 
 #include <glib-object.h>
 #include <gtk/gtk.h>
+#include "type.h"
 
 G_BEGIN_DECLS
 
@@ -77,6 +78,8 @@ void lmp_im_window_move      (LmpIMWindow *self, int x, int y);
 
 void lmp_im_window_page_up   (LmpIMWindow *self);
 void lmp_im_window_page_down (LmpIMWindow *self);
+
+void lmp_im_window_set_mode(LmpIMWindow *self, LmpIMMode mode);
 
 G_END_DECLS
 #endif /*__LMP_IM_WINDOW_H__ */

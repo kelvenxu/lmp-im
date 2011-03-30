@@ -12,4 +12,11 @@ typedef struct _CodeInfo
 	int freq;
 } CodeInfo;
 
+typedef enum
+{
+	LMP_IM_MODE_ENGLISH = 0,
+	LMP_IM_MODE_WUBI,
+	LMP_IM_MODE_PINYIN
+} LmpIMMode;
+
 #endif /*__TYPE_H__ */

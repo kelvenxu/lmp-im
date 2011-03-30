@@ -24,6 +24,7 @@
 
 #include "lmp-im-window.h"
 #include "type.h"
+#include <string.h>
 
 //G_DEFINE_TYPE(LmpIMWindow, lmp_im_window, GTK_TYPE_WINDOW);
 
@@ -49,6 +50,8 @@ struct _LmpIMWindowPrivate
 
 	gint position_x;
 	gint position_y;
+
+	LmpIMMode mode;
 };
 
 enum
@@ -108,6 +111,8 @@ lmp_im_window_init(LmpIMWindow *self)
 
 	priv->position_x = 0;
 	priv->position_y = 0;
+
+	priv->mode = LMP_IM_MODE_WUBI;
 }
 
 static void
@@ -126,13 +131,45 @@ lmp_im_window_new()
 	return GTK_WIDGET(g_object_new(LMP_TYPE_IM_WINDOW, "type", GTK_WINDOW_POPUP, NULL));
 }
 
+static void
+lmp_im_window_set_code_text(LmpIMWindow *self, const gchar *str)
+{
+	LmpIMWindowPrivate *priv = LMP_IM_WINDOW_GET_PRIVATE(self);
+	
+	if(priv->mode == LMP_IM_MODE_PINYIN)
+	{
+		if(strlen(str) > 1)
+		{
+			gchar *s = g_strdup_printf("拼 %s", &(str[1]));
+			gtk_label_set_text(GTK_LABEL(priv->code_label), s);
+			g_free(s);
+		}
+		else
+		{
+			gtk_label_set_text(GTK_LABEL(priv->code_label), "拼 ");
+		}
+	}
+	else
+	{
+		gtk_label_set_text(GTK_LABEL(priv->code_label), str);
+	}
+}
+
+void 
+lmp_im_window_set_cand_text(LmpIMWindow *self, const gchar *str)
+{
+	LmpIMWindowPrivate *priv = LMP_IM_WINDOW_GET_PRIVATE(self);
+	gtk_label_set_text(GTK_LABEL(priv->cand_label), str);
+}
+
 void
 lmp_im_window_append_code_char(LmpIMWindow *self, gchar ch)
 {
 	LmpIMWindowPrivate *priv = LMP_IM_WINDOW_GET_PRIVATE(self);
 
 	g_string_append_c(priv->code_str, ch);
-	gtk_label_set_text(GTK_LABEL(priv->code_label), priv->code_str->str);
+
+	lmp_im_window_set_code_text(self, priv->code_str->str);
 
 	lmp_im_window_clear_candidate(self);
 }
@@ -142,7 +179,8 @@ lmp_im_window_clear_code(LmpIMWindow *self)
 {
 	LmpIMWindowPrivate *priv = LMP_IM_WINDOW_GET_PRIVATE(self);
 
-	gtk_label_set_text(GTK_LABEL(priv->code_label), "");
+	lmp_im_window_set_code_text(self, "");
+
 	g_string_erase(priv->code_str, 0, -1);
 }
 
@@ -173,7 +211,7 @@ lmp_im_window_backspace(LmpIMWindow *self)
 	if(priv->code_str->len > 0)
 	{
 		g_string_erase(priv->code_str, priv->code_str->len - 1, 1);
-		gtk_label_set_text(GTK_LABEL(priv->code_label), priv->code_str->str);
+		lmp_im_window_set_code_text(self, priv->code_str->str);
 
 		lmp_im_window_clear_candidate(self);
 	}
@@ -196,7 +234,7 @@ lmp_im_window_set_candidate(LmpIMWindow *self, GPtrArray *arr)
 		g_string_append_printf(priv->cand_str, "%d. %s ", i, info->chinese);
 	}
 
-	gtk_label_set_text(GTK_LABEL(priv->cand_label), priv->cand_str->str);
+	lmp_im_window_set_cand_text(self, priv->cand_str->str);
 
 	priv->cand_page = 0;
 	priv->cand_page_num = priv->cand_arr->len / CANDIDATE_NUM;
@@ -233,7 +271,7 @@ lmp_im_window_page_up(LmpIMWindow *self)
 			g_string_append_printf(priv->cand_str, "%d. %s ", i - priv->cand_page * CANDIDATE_NUM, info->chinese);
 		}
 
-		gtk_label_set_text(GTK_LABEL(priv->cand_label), priv->cand_str->str);
+		lmp_im_window_set_cand_text(self, priv->cand_str->str);
 	}
 }
 
@@ -263,7 +301,7 @@ lmp_im_window_page_down(LmpIMWindow *self)
 			g_string_append_printf(priv->cand_str, "%d. %s ", i - priv->cand_page * CANDIDATE_NUM, info->chinese);
 		}
 
-		gtk_label_set_text(GTK_LABEL(priv->cand_label), priv->cand_str->str);
+		lmp_im_window_set_cand_text(self, priv->cand_str->str);
 	}
 }
 
@@ -297,7 +335,7 @@ lmp_im_window_clear_candidate(LmpIMWindow *self)
 {
 	LmpIMWindowPrivate *priv = LMP_IM_WINDOW_GET_PRIVATE(self);
 
-	gtk_label_set_text(GTK_LABEL(priv->cand_label), "");
+	lmp_im_window_set_cand_text(self, "");
 
 	g_string_erase(priv->cand_str, 0, -1);
 
@@ -360,7 +398,6 @@ lmp_im_window_move(LmpIMWindow *self, int x, int y)
 	priv->position_x = x;
 	priv->position_y = y + 4;
 	gtk_window_move(GTK_WINDOW(self), priv->position_x, priv->position_y);
-	
 }
 
 static GType im_win_type = 0;
@@ -394,3 +431,10 @@ void lmp_im_window_register_type(GTypeModule *type_module)
 		im_win_type = g_type_module_register_type(type_module, GTK_TYPE_WINDOW, "LmpIMWindow", &im_win_info, 0);
 	}
 }
+
+void lmp_im_window_set_mode(LmpIMWindow *self, LmpIMMode mode)
+{
+	LmpIMWindowPrivate *priv = LMP_IM_WINDOW_GET_PRIVATE(self);
+	priv->mode = mode;
+}
+
