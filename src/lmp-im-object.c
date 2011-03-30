@@ -102,6 +102,24 @@ lmp_im_object_send_keyval(LmpIMObject *context, GdkEventKey *event)
 	return FALSE;
 }
 
+static void
+lmp_im_object_symbol(LmpIMObject *im, GdkEventKey *event)
+{
+	LmpIMObjectPrivate *priv = LMP_IM_OBJECT_GET_PRIVATE(im);
+
+	gunichar ch = gdk_keyval_to_unicode(event->keyval);
+	gchar *chinese = db_query_symbol(ch);
+	if(chinese)
+	{
+		g_signal_emit_by_name(im, "commit", chinese);
+		g_free(chinese);
+	}
+	else
+	{
+		lmp_im_object_send_keyval(im, event);
+	}
+}
+
 static gboolean
 lmp_im_object_wubi_mode(GtkIMContext *context, GdkEventKey *event)
 {
@@ -223,7 +241,7 @@ lmp_im_object_wubi_mode(GtkIMContext *context, GdkEventKey *event)
 	}
 	else if(event->keyval == GDK_KEY_equal) 
 	{
-		// 翻页
+		// "="号翻页
 		if(lmp_im_window_has_candidate(LMP_IM_WINDOW(priv->im_window)))
 		{
 			lmp_im_window_page_down(LMP_IM_WINDOW(priv->im_window));
@@ -231,16 +249,23 @@ lmp_im_object_wubi_mode(GtkIMContext *context, GdkEventKey *event)
 		}
 		else
 		{
+			if(lmp_im_window_has_code(LMP_IM_WINDOW(priv->im_window)))
+			{
+				const gchar *code = lmp_im_window_get_code(LMP_IM_WINDOW(priv->im_window));
+				g_signal_emit_by_name(im, "commit", code);
+			}
+
 			lmp_im_window_clear(LMP_IM_WINDOW(priv->im_window));
 			gtk_widget_hide(priv->im_window);
 
-			lmp_im_object_send_keyval(im, event);
+			lmp_im_object_symbol(im, event);
+
 			return TRUE;
 		}
 	}
 	else if(event->keyval == GDK_KEY_minus)
 	{
-		// 翻页
+		// "-"号翻页
 		if(lmp_im_window_has_candidate(LMP_IM_WINDOW(priv->im_window)))
 		{
 			lmp_im_window_page_up(LMP_IM_WINDOW(priv->im_window));
@@ -248,10 +273,16 @@ lmp_im_object_wubi_mode(GtkIMContext *context, GdkEventKey *event)
 		}
 		else
 		{
+			if(lmp_im_window_has_code(LMP_IM_WINDOW(priv->im_window)))
+			{
+				const gchar *code = lmp_im_window_get_code(LMP_IM_WINDOW(priv->im_window));
+				g_signal_emit_by_name(im, "commit", code);
+			}
+
 			lmp_im_window_clear(LMP_IM_WINDOW(priv->im_window));
 			gtk_widget_hide(priv->im_window);
 
-			lmp_im_object_send_keyval(im, event);
+			lmp_im_object_symbol(im, event);
 			return TRUE;
 		}
 	}
@@ -293,17 +324,7 @@ lmp_im_object_wubi_mode(GtkIMContext *context, GdkEventKey *event)
 		lmp_im_window_clear(LMP_IM_WINDOW(priv->im_window));
 		gtk_widget_hide(priv->im_window);
 
-		gunichar ch = gdk_keyval_to_unicode(event->keyval);
-		gchar *chinese = db_query_symbol(ch);
-		if(chinese)
-		{
-			g_signal_emit_by_name(im, "commit", chinese);
-			g_free(chinese);
-		}
-		else
-		{
-			lmp_im_object_send_keyval(im, event);
-		}
+		lmp_im_object_symbol(im, event);
 
 		return TRUE;
 	}
