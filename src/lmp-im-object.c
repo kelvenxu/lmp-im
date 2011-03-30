@@ -126,6 +126,7 @@ lmp_im_object_wubi_mode(GtkIMContext *context, GdkEventKey *event)
 	LmpIMObject *im = LMP_IM_OBJECT(context);
 	LmpIMObjectPrivate *priv = LMP_IM_OBJECT_GET_PRIVATE(im);
 
+	// 功能键
 	if(event->keyval == GDK_KEY_Tab || 
 			event->keyval == GDK_KEY_Home ||
 			event->keyval == GDK_KEY_Left ||
@@ -143,17 +144,17 @@ lmp_im_object_wubi_mode(GtkIMContext *context, GdkEventKey *event)
 		return FALSE;
 	}
 
-	// 对于大写的情况
-	if(((event->state & GDK_LOCK_MASK) && (!(event->state & GDK_SHIFT_MASK))) ||
-		((!(event->state & GDK_LOCK_MASK)) && (event->state & GDK_SHIFT_MASK)))
+	// 大写A-Z
+	if((event->keyval >= GDK_KEY_A) && (event->keyval <= GDK_KEY_Z))
 	{
 		lmp_im_window_clear(LMP_IM_WINDOW(priv->im_window));
 		gtk_widget_hide(priv->im_window);
 
 		lmp_im_object_send_keyval(im, event);
 		return TRUE;
-	}
+	}	
 
+	// 退格键
 	if(event->keyval == GDK_KEY_BackSpace)
 	{
 		if(lmp_im_window_get_code(LMP_IM_WINDOW(priv->im_window)))
@@ -187,7 +188,9 @@ lmp_im_object_wubi_mode(GtkIMContext *context, GdkEventKey *event)
 			return FALSE;
 		}
 	}
-	else if(event->keyval == GDK_KEY_0 || 
+
+	// 数字键
+	if(event->keyval == GDK_KEY_0 || 
 					event->keyval == GDK_KEY_1 ||
 					event->keyval == GDK_KEY_2 ||
 					event->keyval == GDK_KEY_3 ||
@@ -214,7 +217,9 @@ lmp_im_object_wubi_mode(GtkIMContext *context, GdkEventKey *event)
 			return TRUE;
 		}
 	}
-	else if(event->keyval == GDK_KEY_space)
+
+	// 空格键
+	if(event->keyval == GDK_KEY_space)
 	{
 		// 按空格，选择第一个
 		if(lmp_im_window_has_candidate(LMP_IM_WINDOW(priv->im_window)))
@@ -239,7 +244,9 @@ lmp_im_object_wubi_mode(GtkIMContext *context, GdkEventKey *event)
 			return TRUE;
 		}
 	}
-	else if(event->keyval == GDK_KEY_equal) 
+
+	// 后翻页
+	if(event->keyval == GDK_KEY_equal) 
 	{
 		// "="号翻页
 		if(lmp_im_window_has_candidate(LMP_IM_WINDOW(priv->im_window)))
@@ -263,7 +270,9 @@ lmp_im_object_wubi_mode(GtkIMContext *context, GdkEventKey *event)
 			return TRUE;
 		}
 	}
-	else if(event->keyval == GDK_KEY_minus)
+
+	// 前翻页
+	if(event->keyval == GDK_KEY_minus)
 	{
 		// "-"号翻页
 		if(lmp_im_window_has_candidate(LMP_IM_WINDOW(priv->im_window)))
@@ -286,40 +295,21 @@ lmp_im_object_wubi_mode(GtkIMContext *context, GdkEventKey *event)
 			return TRUE;
 		}
 	}
-	else if(event->keyval == GDK_KEY_colon ||
-					event->keyval == GDK_KEY_semicolon || 
-					event->keyval == GDK_KEY_less ||
+
+	// 符号，不用Shift键
+	if(event->keyval == GDK_KEY_grave ||
+					event->keyval == GDK_KEY_quoteleft ||
+					event->keyval == GDK_KEY_minus ||
 					event->keyval == GDK_KEY_equal ||
-					event->keyval == GDK_KEY_greater ||
-					event->keyval == GDK_KEY_question || 
-					event->keyval == GDK_KEY_at ||
-					event->keyval == GDK_KEY_exclam ||
-					event->keyval == GDK_KEY_quotedbl ||
-					event->keyval == GDK_KEY_numbersign ||
-					event->keyval == GDK_KEY_dollar ||
-					event->keyval == GDK_KEY_percent ||
-					event->keyval == GDK_KEY_ampersand ||
+					event->keyval == GDK_KEY_bracketleft ||
+					event->keyval == GDK_KEY_bracketright ||
+					event->keyval == GDK_KEY_backslash ||
+					event->keyval == GDK_KEY_semicolon || 
 					event->keyval == GDK_KEY_apostrophe ||
 					event->keyval == GDK_KEY_quoteright ||
-					event->keyval == GDK_KEY_parenleft ||
-					event->keyval == GDK_KEY_parenright ||
-					event->keyval == GDK_KEY_asterisk ||
-					event->keyval == GDK_KEY_plus ||
-					event->keyval == GDK_KEY_comma ||
-					event->keyval == GDK_KEY_minus ||
 					event->keyval == GDK_KEY_period ||
-					event->keyval == GDK_KEY_slash ||
-					event->keyval == GDK_KEY_bracketleft ||
-					event->keyval == GDK_KEY_backslash ||
-					event->keyval == GDK_KEY_bracketright ||
-					event->keyval == GDK_KEY_asciicircum ||
-					event->keyval == GDK_KEY_underscore ||
-					event->keyval == GDK_KEY_grave ||
-					event->keyval == GDK_KEY_quoteleft ||
-					event->keyval == GDK_KEY_braceleft ||
-					event->keyval == GDK_KEY_bar ||
-					event->keyval == GDK_KEY_braceright ||
-					event->keyval == GDK_KEY_asciitilde)
+					event->keyval == GDK_KEY_comma ||
+					event->keyval == GDK_KEY_slash) 
 	{
 		lmp_im_window_clear(LMP_IM_WINDOW(priv->im_window));
 		gtk_widget_hide(priv->im_window);
@@ -328,7 +318,41 @@ lmp_im_object_wubi_mode(GtkIMContext *context, GdkEventKey *event)
 
 		return TRUE;
 	}
-	else if(event->keyval == GDK_KEY_Return)
+
+	// 符号，Shift键配合
+	if((event->state & GDK_SHIFT_MASK) && 
+					(event->keyval == GDK_KEY_asciitilde ||
+					event->keyval == GDK_KEY_exclam ||
+					event->keyval == GDK_KEY_at ||
+					event->keyval == GDK_KEY_numbersign ||
+					event->keyval == GDK_KEY_dollar ||
+					event->keyval == GDK_KEY_percent ||
+					event->keyval == GDK_KEY_asciicircum ||
+					event->keyval == GDK_KEY_ampersand ||
+					event->keyval == GDK_KEY_asterisk ||
+					event->keyval == GDK_KEY_parenleft ||
+					event->keyval == GDK_KEY_parenright ||
+					event->keyval == GDK_KEY_underscore ||
+					event->keyval == GDK_KEY_plus ||
+					event->keyval == GDK_KEY_braceleft ||
+					event->keyval == GDK_KEY_braceright ||
+					event->keyval == GDK_KEY_bar ||
+					event->keyval == GDK_KEY_colon ||
+					event->keyval == GDK_KEY_quotedbl ||
+					event->keyval == GDK_KEY_less ||
+					event->keyval == GDK_KEY_greater ||
+					event->keyval == GDK_KEY_question))
+	{
+		lmp_im_window_clear(LMP_IM_WINDOW(priv->im_window));
+		gtk_widget_hide(priv->im_window);
+
+		lmp_im_object_symbol(im, event);
+
+		return TRUE;
+	}
+
+	// 回车键
+	if(event->keyval == GDK_KEY_Return)
 	{
 		const gchar *code = lmp_im_window_get_code(LMP_IM_WINDOW(priv->im_window));
 		if(code)
@@ -343,7 +367,9 @@ lmp_im_object_wubi_mode(GtkIMContext *context, GdkEventKey *event)
 			return FALSE;
 		}
 	}
-	else if((event->keyval >= GDK_KEY_a) && 
+
+	// 小写字母
+	if((event->keyval >= GDK_KEY_a) && 
 					(event->keyval <= GDK_KEY_z) && 
 					(!(event->state & GDK_SHIFT_MASK)) &&
 					(!(event->state & GDK_CONTROL_MASK)))
@@ -379,13 +405,11 @@ lmp_im_object_wubi_mode(GtkIMContext *context, GdkEventKey *event)
 				//lmp_im_window_set_no_candidate(LMP_IM_WINDOW(priv->im_window));
 			}
 		}
-	}
-	else
-	{
-		return FALSE;
+
+		return TRUE;
 	}
 
-	return TRUE;
+	return FALSE;
 }
 
 static gboolean
@@ -444,9 +468,7 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 	LmpIMObject *im = LMP_IM_OBJECT(context);
 	LmpIMObjectPrivate *priv = LMP_IM_OBJECT_GET_PRIVATE(im);
 
-	if(event->type == GDK_KEY_RELEASE 
-			&& event->keyval == GDK_KEY_space 
-			&& event->state & GDK_CONTROL_MASK)
+	if(event->type == GDK_KEY_RELEASE && event->keyval == GDK_KEY_space && event->state & GDK_CONTROL_MASK)
 	{
 		lmp_im_window_clear(LMP_IM_WINDOW(priv->im_window));
 		gtk_widget_hide(priv->im_window);
@@ -467,11 +489,13 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 		return FALSE;
 	}
 
+#if 0
 	if(event->type == GDK_KEY_PRESS && event->keyval == GDK_KEY_space && event->state & GDK_CONTROL_MASK)
 	{
 		priv->old_keyval = event->keyval;
 		return FALSE;
 	}
+#endif
 
 	if(event->type != GDK_KEY_PRESS) 
 	{
@@ -482,8 +506,10 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 	{
 		return lmp_im_object_english_mode(context, event);
 	}
-
-	return lmp_im_object_wubi_mode(context, event);
+	else
+	{
+		return lmp_im_object_wubi_mode(context, event);
+	}
 }
 
 
