@@ -192,6 +192,7 @@ db_query_wubi(const char *code)
 	if(ret != SQLITE_OK)
 	{
 		g_print("sqlite3_prepare_v2 failed, return %d\n", ret);
+		return NULL;
 	}
 
 	GPtrArray *array = g_ptr_array_new();

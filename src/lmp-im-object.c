@@ -106,14 +106,20 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 	LmpIMObjectPrivate *priv = LMP_IM_OBJECT_GET_PRIVATE(im);
 
 	//fprintf(stderr, "%s : %s\n", __FILE__, __func__);
-	//fprintf(stderr, "state - 0x%X, keyval - 0x%X time %u\n", event->state & GDK_SHIFT_MASK, event->keyval, event->time);
+	//fprintf(stderr, "type - %d state - 0x%X, keyval - 0x%X \n", event->type, event->state & GDK_CONTROL_MASK, event->keyval);
 
-	if(event->type == GDK_KEY_RELEASE && event->keyval == GDK_Shift_L && priv->old_keyval == GDK_Shift_L)
+	if(event->type == GDK_KEY_RELEASE 
+			&& event->keyval == GDK_space 
+			&& event->state & GDK_CONTROL_MASK)
+			//&& event->keyval == GDK_Shift_R 
+			//&& priv->old_keyval == GDK_Shift_R)
 	{
 		lmp_im_window_clear(LMP_IM_WINDOW(priv->im_window));
 		gtk_widget_hide(priv->im_window);
 
 		priv->english_mode = !priv->english_mode;
+		//fprintf(stderr, "change to englist: %d\n", priv->english_mode);
+		return FALSE;
 	}
 	else if(event->type == GDK_KEY_PRESS && event->keyval == GDK_Escape)
 	{
@@ -121,13 +127,14 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 		gtk_widget_hide(priv->im_window);
 
 		priv->english_mode = TRUE;
+		return FALSE;
 	}
 
-	if(event->type == GDK_KEY_PRESS)
+	if(event->type == GDK_KEY_PRESS && event->keyval == GDK_space && event->state & GDK_CONTROL_MASK)
+	{
 		priv->old_keyval = event->keyval;
-
-	//if(priv->english_mode)
-	//	return FALSE;
+		return FALSE;
+	}
 
 	if(event->type != GDK_KEY_PRESS) 
 	{
@@ -219,6 +226,13 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 			if(code && strlen(code) > 0)
 			{
 				GPtrArray *array = db_query_wubi(code);
+				if(!array)
+				{
+					db_close();
+					db_open(DATADIR"/wubi.db");
+					array = db_query_wubi(code);
+				}
+
 				if(array && array->len > 0)
 				{
 					lmp_im_window_set_candidate(LMP_IM_WINDOW(priv->im_window), array);

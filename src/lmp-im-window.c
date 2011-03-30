@@ -190,10 +190,11 @@ lmp_im_window_set_candidate(LmpIMWindow *self, GPtrArray *arr)
 	for(i = 0; i < arr->len && i < CANDIDATE_NUM; ++i)
 	{
 		CodeInfo *info = g_ptr_array_index(arr, i);
-		g_string_append_printf(priv->cand_str, "%d. %s", i, info->chinese);
+		g_string_append_printf(priv->cand_str, "<b>%s</b><span color=\"#844798\"><sup>%d</sup></span> ", info->chinese, i);
 	}
 
-	gtk_label_set_text(GTK_LABEL(priv->cand_label), priv->cand_str->str);
+	//gtk_label_set_text(GTK_LABEL(priv->cand_label), priv->cand_str->str);
+	gtk_label_set_markup(GTK_LABEL(priv->cand_label), priv->cand_str->str);
 
 	priv->cand_page = 0;
 	priv->cand_page_num = priv->cand_arr->len / CANDIDATE_NUM;
