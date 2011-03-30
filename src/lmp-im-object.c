@@ -102,91 +102,11 @@ lmp_im_object_send_keyval(LmpIMObject *context, GdkEventKey *event)
 	return FALSE;
 }
 
-static gboolean 
-lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
+static gboolean
+lmp_im_object_wubi_mode(GtkIMContext *context, GdkEventKey *event)
 {
 	LmpIMObject *im = LMP_IM_OBJECT(context);
 	LmpIMObjectPrivate *priv = LMP_IM_OBJECT_GET_PRIVATE(im);
-
-	if(event->type == GDK_KEY_RELEASE 
-			&& event->keyval == GDK_KEY_space 
-			&& event->state & GDK_CONTROL_MASK)
-	{
-		lmp_im_window_clear(LMP_IM_WINDOW(priv->im_window));
-		gtk_widget_hide(priv->im_window);
-
-		if(priv->mode == LMP_IM_MODE_ENGLISH)
-			priv->mode = LMP_IM_MODE_WUBI;
-		else
-			priv->mode = LMP_IM_MODE_ENGLISH;
-
-		return FALSE;
-	}
-	else if(event->type == GDK_KEY_PRESS && event->keyval == GDK_KEY_Escape)
-	{
-		lmp_im_window_clear(LMP_IM_WINDOW(priv->im_window));
-		gtk_widget_hide(priv->im_window);
-
-		priv->mode = LMP_IM_MODE_ENGLISH;
-		return FALSE;
-	}
-
-	if(event->type == GDK_KEY_PRESS && event->keyval == GDK_KEY_space && event->state & GDK_CONTROL_MASK)
-	{
-		priv->old_keyval = event->keyval;
-		return FALSE;
-	}
-
-	if(event->type != GDK_KEY_PRESS) 
-	{
-		return FALSE;
-	}
-
-	if(priv->mode == LMP_IM_MODE_ENGLISH)
-	{
-		if(event->keyval == GDK_KEY_BackSpace || 
-			 event->keyval == GDK_KEY_Escape ||
-			 event->keyval == GDK_KEY_Return || 
-			 event->keyval == GDK_KEY_Tab ||
-			 event->keyval == GDK_KEY_Home ||
-			 event->keyval == GDK_KEY_Left ||
-			 event->keyval == GDK_KEY_Right ||
-			 event->keyval == GDK_KEY_Up ||
-			 event->keyval == GDK_KEY_Down ||
-			 event->keyval == GDK_KEY_Page_Up ||
-			 event->keyval == GDK_KEY_Page_Down ||
-			 event->keyval == GDK_KEY_End ||
-			 event->keyval == GDK_KEY_Begin)
-		{
-			return FALSE;
-		}
-
-		// 注意顺序不能变,先判断CONTROL_MASK, 最后才是SHIFT_MASK
-		if(event->state & GDK_CONTROL_MASK)
-		{
-			return FALSE;
-		}
-
-		// alt key
-		if(event->state & GDK_MOD1_MASK)
-		{
-			return FALSE;
-		}
-
-		if(event->state & GDK_LOCK_MASK)
-		{
-			return FALSE;
-		}
-
-		if(event->state & GDK_SHIFT_MASK)
-		{
-			lmp_im_object_send_keyval(im, event);
-			return TRUE;
-		}
-
-		lmp_im_object_send_keyval(im, event);
-		return TRUE;
-	}
 
 	if(event->keyval == GDK_KEY_Tab || 
 			event->keyval == GDK_KEY_Home ||
@@ -444,6 +364,105 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 
 	return TRUE;
 }
+
+static gboolean
+lmp_im_object_english_mode(GtkIMContext *context, GdkEventKey *event)
+{
+	LmpIMObject *im = LMP_IM_OBJECT(context);
+	LmpIMObjectPrivate *priv = LMP_IM_OBJECT_GET_PRIVATE(im);
+
+	if(event->keyval == GDK_KEY_BackSpace || 
+			event->keyval == GDK_KEY_Escape ||
+			event->keyval == GDK_KEY_Return || 
+			event->keyval == GDK_KEY_Tab ||
+			event->keyval == GDK_KEY_Home ||
+			event->keyval == GDK_KEY_Left ||
+			event->keyval == GDK_KEY_Right ||
+			event->keyval == GDK_KEY_Up ||
+			event->keyval == GDK_KEY_Down ||
+			event->keyval == GDK_KEY_Page_Up ||
+			event->keyval == GDK_KEY_Page_Down ||
+			event->keyval == GDK_KEY_End ||
+			event->keyval == GDK_KEY_Begin)
+	{
+		return FALSE;
+	}
+
+	// 注意顺序不能变,先判断CONTROL_MASK, 最后才是SHIFT_MASK
+	if(event->state & GDK_CONTROL_MASK)
+	{
+		return FALSE;
+	}
+
+	// alt key
+	if(event->state & GDK_MOD1_MASK)
+	{
+		return FALSE;
+	}
+
+	if(event->state & GDK_LOCK_MASK)
+	{
+		return FALSE;
+	}
+
+	if(event->state & GDK_SHIFT_MASK)
+	{
+		lmp_im_object_send_keyval(im, event);
+		return TRUE;
+	}
+
+	lmp_im_object_send_keyval(im, event);
+	return TRUE;
+}
+
+static gboolean 
+lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
+{
+	LmpIMObject *im = LMP_IM_OBJECT(context);
+	LmpIMObjectPrivate *priv = LMP_IM_OBJECT_GET_PRIVATE(im);
+
+	if(event->type == GDK_KEY_RELEASE 
+			&& event->keyval == GDK_KEY_space 
+			&& event->state & GDK_CONTROL_MASK)
+	{
+		lmp_im_window_clear(LMP_IM_WINDOW(priv->im_window));
+		gtk_widget_hide(priv->im_window);
+
+		if(priv->mode == LMP_IM_MODE_ENGLISH)
+			priv->mode = LMP_IM_MODE_WUBI;
+		else
+			priv->mode = LMP_IM_MODE_ENGLISH;
+
+		return FALSE;
+	}
+	else if(event->type == GDK_KEY_PRESS && event->keyval == GDK_KEY_Escape)
+	{
+		lmp_im_window_clear(LMP_IM_WINDOW(priv->im_window));
+		gtk_widget_hide(priv->im_window);
+
+		priv->mode = LMP_IM_MODE_ENGLISH;
+		return FALSE;
+	}
+
+	if(event->type == GDK_KEY_PRESS && event->keyval == GDK_KEY_space && event->state & GDK_CONTROL_MASK)
+	{
+		priv->old_keyval = event->keyval;
+		return FALSE;
+	}
+
+	if(event->type != GDK_KEY_PRESS) 
+	{
+		return FALSE;
+	}
+
+	if(priv->mode == LMP_IM_MODE_ENGLISH)
+	{
+		return lmp_im_object_english_mode(context, event);
+	}
+
+	return lmp_im_object_wubi_mode(context, event);
+}
+
 
 static void     
 lmp_im_object_focus_in(GtkIMContext *context)
