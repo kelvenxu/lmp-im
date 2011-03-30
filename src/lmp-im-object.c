@@ -43,15 +43,12 @@ struct _LmpIMObjectPrivate
 	GtkWidget *im_window;
 
 	LmpIMMode mode;
-	//gboolean english_mode;
 	guint old_keyval;
 };
 
 static void     
 lmp_im_object_set_client_window(GtkIMContext *context, GdkWindow *window)
 {
-	//fprintf(stderr, "%s : %s\n", __FILE__, __func__);
-
 	LmpIMObject *im = LMP_IM_OBJECT(context);
 	LmpIMObjectPrivate *priv = LMP_IM_OBJECT_GET_PRIVATE(im);
 
@@ -65,16 +62,12 @@ lmp_im_object_set_client_window(GtkIMContext *context, GdkWindow *window)
 	{
 		priv->client_window = g_object_ref(window);
 	}
-
-	//fprintf(stderr, "%s : %s end\n", __FILE__, __func__);
 }
 
 #if 0
 static void     
 lmp_im_object_get_preedit_string(GtkIMContext *context, gchar **str, PangoAttrList **attrs, gint *cursor_pos)
 {
-	fprintf(stderr, "%s : %s\n", __FILE__, __func__);
-
 	gchar *s = g_strdup("skelvenxu");
 	*str = s;
 	*attrs = pango_attr_list_new();
@@ -474,9 +467,13 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 		gtk_widget_hide(priv->im_window);
 
 		if(priv->mode == LMP_IM_MODE_ENGLISH)
+		{
 			priv->mode = LMP_IM_MODE_WUBI;
+		}
 		else
+		{
 			priv->mode = LMP_IM_MODE_ENGLISH;
+		}
 
 		return FALSE;
 	}
@@ -489,13 +486,11 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 		return FALSE;
 	}
 
-#if 0
 	if(event->type == GDK_KEY_PRESS && event->keyval == GDK_KEY_space && event->state & GDK_CONTROL_MASK)
 	{
-		priv->old_keyval = event->keyval;
+		//priv->old_keyval = event->keyval;
 		return FALSE;
 	}
-#endif
 
 	if(event->type != GDK_KEY_PRESS) 
 	{

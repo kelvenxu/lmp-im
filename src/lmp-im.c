@@ -41,8 +41,6 @@ static const GtkIMContextInfo *info_list[] =
 
 void im_module_init(GTypeModule *type_module)
 {
-	fprintf(stderr, "%s : %s\n", __FILE__, __func__);
-
 	lmp_im_window_register_type(type_module);
 	lmp_im_object_register_type(type_module);
 }
@@ -53,16 +51,12 @@ void im_module_exit(void)
 
 void im_module_list(const GtkIMContextInfo ***contexts, int *n_contexts)
 {
-	fprintf(stderr, "%s : %s\n", __FILE__, __func__);
-
 	*contexts = info_list;
 	*n_contexts = G_N_ELEMENTS(info_list);
 }
 
 GtkIMContext *im_module_create(const gchar *context_id)
 {
-	fprintf(stderr, "%s : %s %s\n", __FILE__, __func__, context_id);
-
 	if(strcmp(context_id, "lmp") == 0)
 	{
 		return g_object_new(LMP_IM_TYPE_OBJECT, NULL);
