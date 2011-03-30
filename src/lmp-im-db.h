@@ -4,8 +4,9 @@
 #include "type.h"
 #include <glib.h>
 
-#define DB_TABLE_WUBI "wubi_table_name"
-#define DB_TABLE_PINYIN "pinyin_table_name"
+#define DB_TABLE_WUBI "wubi_all"
+#define DB_TABLE_PINYIN "pinyin_all"
+#define DB_TABLE_SYMBOL "symbol_all"
 
 typedef int (*DBQueryCallback) (void*, int, char**, char**);
 
@@ -23,5 +24,6 @@ int db_query(const char *table_name, const char *query, DBQueryCallback callback
 
 GPtrArray * db_query_wubi(const char *code);
 GPtrArray * db_query_pinyin(const char *code);
+gchar * db_query_symbol(char code);
 
 #endif /*__LMP_IM_DB__H__ */

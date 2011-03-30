@@ -8,6 +8,7 @@
 static sqlite3 *handle;
 static char* wubi_table_name = "wubi_all";
 static char* pinyin_table_name = "pinyin_all";
+static char* symbol_table_name = "symbol_all";
 
 gboolean
 db_table_exist(const char *table_name)
@@ -261,8 +262,6 @@ db_query_pinyin(const char *code)
 			p = g_utf8_next_char(p);
 		}
 
-		//g_print("chinese: %s\n", chinese);
-
 		ret = sqlite3_step(stmt);
 	}
 
@@ -271,3 +270,30 @@ db_query_pinyin(const char *code)
 	return array;
 }
 
+gchar *
+db_query_symbol(gchar code)
+{
+	if(!code)
+		return NULL;
+
+	gchar *chinese = NULL;
+
+	char *cmd = g_strdup_printf("select * from %s where code = '%c'\n", symbol_table_name, code);
+
+	sqlite3_stmt *stmt;
+	sqlite3_prepare_v2(handle, cmd, strlen(cmd), &stmt, NULL);
+
+	int ret = sqlite3_step(stmt);
+
+	if(ret == SQLITE_ROW)
+	{
+		const char *str = sqlite3_column_text(stmt, 1);
+
+		if(str)
+			chinese = g_strdup(str);
+	}
+
+	sqlite3_finalize(stmt);
+
+	return chinese;
+}

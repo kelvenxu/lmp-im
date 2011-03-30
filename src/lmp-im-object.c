@@ -108,14 +108,9 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 	LmpIMObject *im = LMP_IM_OBJECT(context);
 	LmpIMObjectPrivate *priv = LMP_IM_OBJECT_GET_PRIVATE(im);
 
-	//fprintf(stderr, "%s : %s\n", __FILE__, __func__);
-	//fprintf(stderr, "type - %d state - 0x%X, keyval - 0x%X \n", event->type, event->state & GDK_CONTROL_MASK, event->keyval);
-
 	if(event->type == GDK_KEY_RELEASE 
 			&& event->keyval == GDK_KEY_space 
 			&& event->state & GDK_CONTROL_MASK)
-			//&& event->keyval == GDK_Shift_R 
-			//&& priv->old_keyval == GDK_Shift_R)
 	{
 		lmp_im_window_clear(LMP_IM_WINDOW(priv->im_window));
 		gtk_widget_hide(priv->im_window);
@@ -147,7 +142,6 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 		return FALSE;
 	}
 
-	//if(priv->english_mode)
 	if(priv->mode == LMP_IM_MODE_ENGLISH)
 	{
 		if(event->keyval == GDK_KEY_BackSpace || 
@@ -170,7 +164,6 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 		// 注意顺序不能变,先判断CONTROL_MASK, 最后才是SHIFT_MASK
 		if(event->state & GDK_CONTROL_MASK)
 		{
-			g_print("ctrl state %X\n", event->state);
 			return FALSE;
 		}
 
@@ -182,7 +175,6 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 
 		if(event->state & GDK_LOCK_MASK)
 		{
-			g_print("lock state %X\n", event->state);
 			return FALSE;
 		}
 
@@ -379,7 +371,18 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 		lmp_im_window_clear(LMP_IM_WINDOW(priv->im_window));
 		gtk_widget_hide(priv->im_window);
 
-		lmp_im_object_send_keyval(im, event);
+		gunichar ch = gdk_keyval_to_unicode(event->keyval);
+		gchar *chinese = db_query_symbol(ch);
+		if(chinese)
+		{
+			g_signal_emit_by_name(im, "commit", chinese);
+			g_free(chinese);
+		}
+		else
+		{
+			lmp_im_object_send_keyval(im, event);
+		}
+
 		return TRUE;
 	}
 	else if(event->keyval == GDK_KEY_Return)

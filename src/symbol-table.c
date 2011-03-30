@@ -1,10 +1,10 @@
 /* vi: set sw=4 ts=4: */
 /*
- * readfile.c
+ * symbol-table.c
  *
  * This file is part of lmp-im.
  *
- * Copyright (C) 2010 - kelvenxu <kelvenxu@gmail.com>.
+ * Copyright (C) 2011 - kelvenxu <kelvenxu@gmail.com>.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,10 +38,10 @@ int main(int argc, char *argv[])
 	char character[LINE_CHARS];
 	int freq;
 
-	FILE *fp = fopen("pinyin.txt", "r");
+	FILE *fp = fopen("symbol.txt", "r");
 	if(!fp)
 	{
-		fprintf(stderr, "Can't open pinyin.txt\n");
+		fprintf(stderr, "Can't open symbol.txt\n");
 		return -1;
 	}
 
@@ -50,6 +50,8 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "Can't open wubi.db\n");
 		return -1;
 	}
+
+	db_table_create(DB_TABLE_SYMBOL);
 
 	while(!feof(fp))
 	{
@@ -65,11 +67,10 @@ int main(int argc, char *argv[])
 		info.chinese = character;
 		info.freq = 0;
 
-		db_insert(DB_TABLE_PINYIN, &info);
+		db_insert(DB_TABLE_SYMBOL, &info);
 	}
 
 	db_close();
 	fclose(fp);
 	return 0;
 }
-
