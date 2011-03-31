@@ -113,6 +113,29 @@ lmp_im_object_symbol(LmpIMObject *im, GdkEventKey *event)
 	}
 }
 
+static void
+lmp_im_object_query_wubi_code(LmpIMObject *im, GPtrArray *arr)
+{
+	gint i = 0;
+
+	for(i = 0; i < arr->len; ++i)
+	{
+		CodeInfo *info = g_ptr_array_index(arr, i);
+		gchar *code = db_query_wubi_code(info->chinese);
+
+		if(info->code)
+		{
+			g_free(info->code);
+			info->code = NULL;
+		}
+
+		if(code)
+		{
+			info->code = code;
+		}
+	}
+}
+
 static gboolean
 lmp_im_object_wubi_mode(GtkIMContext *context, GdkEventKey *event)
 {
@@ -379,6 +402,8 @@ lmp_im_object_wubi_mode(GtkIMContext *context, GdkEventKey *event)
 				priv->mode = LMP_IM_MODE_PINYIN;
 
 				lmp_im_window_set_mode(LMP_IM_WINDOW(priv->im_window), LMP_IM_MODE_PINYIN);
+
+				lmp_im_object_query_wubi_code(im, array);
 			}
 			else
 			{

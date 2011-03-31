@@ -25,5 +25,6 @@ int db_query(const char *table_name, const char *query, DBQueryCallback callback
 GPtrArray * db_query_wubi(const char *code);
 GPtrArray * db_query_pinyin(const char *code);
 gchar * db_query_symbol(char code);
+gchar * db_query_wubi_code(const gchar *chinese);
 
 #endif /*__LMP_IM_DB__H__ */

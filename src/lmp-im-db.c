@@ -224,6 +224,35 @@ db_query_wubi(const char *code)
 	return array;
 }
 
+// 反查汉字的五笔码
+gchar *
+db_query_wubi_code(const gchar *chinese)
+{
+	if(!chinese)
+		return NULL;
+
+	gchar *code = NULL;
+
+	char *cmd = g_strdup_printf("select * from %s where chinese = '%s'\n", wubi_table_name, chinese);
+
+	sqlite3_stmt *stmt;
+	sqlite3_prepare_v2(handle, cmd, strlen(cmd), &stmt, NULL);
+
+	int ret = sqlite3_step(stmt);
+
+	if(ret == SQLITE_ROW)
+	{
+		const char *str = sqlite3_column_text(stmt, 0);
+
+		if(str)
+			code = g_strdup(str);
+	}
+
+	sqlite3_finalize(stmt);
+
+	return code;
+}
+
 GPtrArray *
 db_query_pinyin(const char *code)
 {

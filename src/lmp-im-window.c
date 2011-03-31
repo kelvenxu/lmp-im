@@ -218,6 +218,33 @@ lmp_im_window_backspace(LmpIMWindow *self)
 
 	return priv->code_str->len;
 }
+static void
+lmp_im_window_set_candidate_range(LmpIMWindow *self, gint begin, gint end)
+{
+	gint i = 0;
+	LmpIMWindowPrivate *priv = LMP_IM_WINDOW_GET_PRIVATE(self);
+	
+	g_string_erase(priv->cand_str, 0, -1);
+
+	if(priv->mode == LMP_IM_MODE_PINYIN)
+	{
+		for(i = begin; i < end && i < priv->cand_arr->len && (i - begin) < CANDIDATE_NUM; ++i)
+		{
+			CodeInfo *info = g_ptr_array_index(priv->cand_arr, i);
+			g_string_append_printf(priv->cand_str, "%s<span color=\"#844798\"><sup>%d</sup><sub>%s</sub></span> ", info->chinese, i - begin, info->code);
+		}
+	}
+	else
+	{
+		for(i = begin; i < end && i < priv->cand_arr->len && (i - begin) < CANDIDATE_NUM; ++i)
+		{
+			CodeInfo *info = g_ptr_array_index(priv->cand_arr, i);
+			g_string_append_printf(priv->cand_str, "%s<span color=\"#844798\"><sup>%d</sup></span> ", info->chinese, i - begin);
+		}
+	}
+
+	lmp_im_window_set_cand_text(self, priv->cand_str->str);
+}
 
 void 
 lmp_im_window_set_candidate(LmpIMWindow *self, GPtrArray *arr)
@@ -226,16 +253,30 @@ lmp_im_window_set_candidate(LmpIMWindow *self, GPtrArray *arr)
 
 	priv->cand_arr = arr;
 	
+#if 0
 	gint i = 0;
 	
-	for(i = 0; i < arr->len && i < CANDIDATE_NUM; ++i)
+	if(priv->mode == LMP_IM_MODE_PINYIN)
 	{
-		CodeInfo *info = g_ptr_array_index(arr, i);
-		//g_string_append_printf(priv->cand_str, "%d. %s ", i, info->chinese);
-		g_string_append_printf(priv->cand_str, "<b>%s</b><span color=\"#844798\"><sup>%d</sup></span> ", info->chinese, i);
+		for(i = 0; i < arr->len && i < CANDIDATE_NUM; ++i)
+		{
+			CodeInfo *info = g_ptr_array_index(arr, i);
+			g_string_append_printf(priv->cand_str, "<b>%s</b><span color=\"#844798\"><sup>%d</sup>%s</span> ", info->chinese, i, info->code);
+		}
+	}
+	else
+	{
+		for(i = 0; i < arr->len && i < CANDIDATE_NUM; ++i)
+		{
+			CodeInfo *info = g_ptr_array_index(arr, i);
+			g_string_append_printf(priv->cand_str, "<b>%s</b><span color=\"#844798\"><sup>%d</sup></span> ", info->chinese, i);
+		}
 	}
 
 	lmp_im_window_set_cand_text(self, priv->cand_str->str);
+#endif
+
+	lmp_im_window_set_candidate_range(self, 0, CANDIDATE_NUM);
 
 	priv->cand_page = 0;
 	priv->cand_page_num = priv->cand_arr->len / CANDIDATE_NUM;
@@ -263,6 +304,7 @@ lmp_im_window_page_up(LmpIMWindow *self)
 
 	if(start >= 0 && start < priv->cand_arr->len)
 	{
+#if 0
 		gint i = 0;
 		g_string_erase(priv->cand_str, 0, -1);
 
@@ -273,6 +315,9 @@ lmp_im_window_page_up(LmpIMWindow *self)
 		}
 
 		lmp_im_window_set_cand_text(self, priv->cand_str->str);
+#endif
+
+		lmp_im_window_set_candidate_range(self, start, start + CANDIDATE_NUM);
 	}
 }
 
@@ -293,6 +338,7 @@ lmp_im_window_page_down(LmpIMWindow *self)
 	
 	if(start >= 0 && start < priv->cand_arr->len)
 	{
+#if 0
 		gint i = 0;
 		g_string_erase(priv->cand_str, 0, -1);
 
@@ -303,6 +349,8 @@ lmp_im_window_page_down(LmpIMWindow *self)
 		}
 
 		lmp_im_window_set_cand_text(self, priv->cand_str->str);
+#endif
+		lmp_im_window_set_candidate_range(self, start, start + CANDIDATE_NUM);
 	}
 }
 
