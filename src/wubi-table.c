@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
 	int freq;
 
 	FILE *fp = fopen("wubi.txt", "r");
-	db_open("wubi.db");
+	db_open("lmp-table.db");
 
 	while(!feof(fp))
 	{

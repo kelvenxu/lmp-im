@@ -183,7 +183,7 @@ lmp_im_object_wubi_mode(GtkIMContext *context, GdkEventKey *event)
 				if(!array)
 				{
 					db_close();
-					db_open(DATADIR"/wubi.db");
+					db_open(DATADIR"/lmp-table.db");
 					array = db_query_wubi(code);
 				}
 

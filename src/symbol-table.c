@@ -45,9 +45,9 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-	if(db_open("wubi.db") == -1)
+	if(db_open("lmp-table.db") == -1)
 	{
-		fprintf(stderr, "Can't open wubi.db\n");
+		fprintf(stderr, "Can't open lmp-table.db\n");
 		return -1;
 	}
 

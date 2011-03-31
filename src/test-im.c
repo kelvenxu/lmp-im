@@ -202,7 +202,7 @@ int main(int argc, char *argv[])
 
 	g_signal_connect(win, "delete-event", G_CALLBACK(gtk_main_quit), NULL);
 
-	db_open("../wubi.db");
+	db_open("../lmp-table.db");
 	gtk_main();
 	db_close();
 	return 0;
