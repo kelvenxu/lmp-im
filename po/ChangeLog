@@ -1,3 +1,8 @@
+2011-06-17  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* boldquot.sed: New file, from gettext-0.18.1.
+	* quot.sed: New file, from gettext-0.18.1.
+
 2011-03-28  gettextize  <bug-gnu-gettext@gnu.org>
 
 	* Makefile.in.in: Upgrade to gettext-0.18.1.

@@ -38,8 +38,10 @@ int main(int argc, char *argv[])
 	char character[64];
 	int freq;
 
+	LmpimDB *db = g_object_new (LMPIM_TYPE_DB, NULL);
+
 	FILE *fp = fopen("wubi.txt", "r");
-	db_open("lmp-table.db");
+	db_open(db, "lmp-table.db");
 
 	while(!feof(fp))
 	{
@@ -54,10 +56,10 @@ int main(int argc, char *argv[])
 		info.code = code;
 		info.chinese = character;
 		info.freq = freq;
-		db_insert(DB_TABLE_WUBI, &info);
+		db_insert(db, DB_TABLE_WUBI, &info);
 	}
 
-	db_close();
+	db_close(db);
 	fclose(fp);
 	return 0;
 }

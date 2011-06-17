@@ -44,6 +44,8 @@ struct _LmpIMObjectPrivate
 
 	LmpIMMode mode;
 	guint old_keyval;
+
+	LmpimDB *db;
 };
 
 static void     
@@ -101,7 +103,7 @@ lmp_im_object_symbol(LmpIMObject *im, GdkEventKey *event)
 	LmpIMObjectPrivate *priv = LMP_IM_OBJECT_GET_PRIVATE(im);
 
 	gunichar ch = gdk_keyval_to_unicode(event->keyval);
-	gchar *chinese = db_query_symbol(ch);
+	gchar *chinese = db_query_symbol(priv->db, ch);
 	if(chinese)
 	{
 		g_signal_emit_by_name(im, "commit", chinese);
@@ -118,10 +120,12 @@ lmp_im_object_query_wubi_code(LmpIMObject *im, GPtrArray *arr)
 {
 	gint i = 0;
 
+	LmpIMObjectPrivate *priv = LMP_IM_OBJECT_GET_PRIVATE(im);
+
 	for(i = 0; i < arr->len; ++i)
 	{
 		CodeInfo *info = g_ptr_array_index(arr, i);
-		gchar *code = db_query_wubi_code(info->chinese);
+		gchar *code = db_query_wubi_code(priv->db, info->chinese);
 
 		if(info->code)
 		{
@@ -179,12 +183,12 @@ lmp_im_object_wubi_mode(GtkIMContext *context, GdkEventKey *event)
 			const gchar *code = lmp_im_window_get_code(LMP_IM_WINDOW(priv->im_window));
 			if(code && strlen(code) > 0)
 			{
-				GPtrArray *array = db_query_wubi(code);
+				GPtrArray *array = db_query_wubi(priv->db, code);
 				if(!array)
 				{
-					db_close();
-					db_open(DATADIR"/lmp-table.db");
-					array = db_query_wubi(code);
+					db_close(priv->db);
+					db_open(priv->db, DATADIR"/lmp-table.db");
+					array = db_query_wubi(priv->db, code);
 				}
 
 				if(array && array->len > 0)
@@ -398,7 +402,7 @@ lmp_im_object_wubi_mode(GtkIMContext *context, GdkEventKey *event)
 			GPtrArray *array = NULL;
 			if(code[0] == 'z') // 当是z开头时,输入拼音查询
 			{
-				array = db_query_pinyin(&(code[1]));
+				array = db_query_pinyin(priv->db, &(code[1]));
 				priv->mode = LMP_IM_MODE_PINYIN;
 
 				lmp_im_window_set_mode(LMP_IM_WINDOW(priv->im_window), LMP_IM_MODE_PINYIN);
@@ -407,7 +411,7 @@ lmp_im_object_wubi_mode(GtkIMContext *context, GdkEventKey *event)
 			}
 			else
 			{
-				array = db_query_wubi(code);
+				array = db_query_wubi(priv->db, code);
 				priv->mode = LMP_IM_MODE_WUBI;
 
 				lmp_im_window_set_mode(LMP_IM_WINDOW(priv->im_window), LMP_IM_MODE_WUBI);
@@ -583,7 +587,9 @@ lmp_im_object_set_cursor_location(GtkIMContext *context, GdkRectangle *area)
 static void
 lmp_im_object_dispose(LmpIMObject *self)
 {
-	db_close();
+	LmpIMObjectPrivate *priv = LMP_IM_OBJECT_GET_PRIVATE(self);
+
+	db_close(priv->db);
 }
 
 static void
@@ -605,7 +611,8 @@ lmp_im_object_init(LmpIMObject *self)
 	priv->mode = LMP_IM_MODE_ENGLISH;
 	priv->old_keyval = 0;
 
-	db_open(DATADIR"/wubi.db");
+	priv->db = g_object_new (LMPIM_TYPE_DB, NULL);
+	db_open(priv->db, DATADIR"/wubi.db");
 }
 
 static void

@@ -38,6 +38,8 @@ int main(int argc, char *argv[])
 	char character[LINE_CHARS];
 	int freq;
 
+	LmpimDB *db = g_object_new(LMPIM_TYPE_DB, NULL);
+
 	FILE *fp = fopen("symbol.txt", "r");
 	if(!fp)
 	{
@@ -45,13 +47,13 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-	if(db_open("lmp-table.db") == -1)
+	if(db_open(db, "lmp-table.db") == -1)
 	{
 		fprintf(stderr, "Can't open lmp-table.db\n");
 		return -1;
 	}
 
-	db_table_create(DB_TABLE_SYMBOL);
+	db_table_create(db, DB_TABLE_SYMBOL);
 
 	while(!feof(fp))
 	{
@@ -67,10 +69,10 @@ int main(int argc, char *argv[])
 		info.chinese = character;
 		info.freq = 0;
 
-		db_insert(DB_TABLE_SYMBOL, &info);
+		db_insert(db, DB_TABLE_SYMBOL, &info);
 	}
 
-	db_close();
+	db_close(db);
 	fclose(fp);
 	return 0;
 }

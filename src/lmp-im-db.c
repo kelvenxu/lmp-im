@@ -5,18 +5,57 @@
 #include <stdio.h>
 #include <string.h>
 
-static sqlite3 *handle;
 static char* wubi_table_name = "wubi_all";
 static char* pinyin_table_name = "pinyin_all";
 static char* symbol_table_name = "symbol_all";
 
+
+G_DEFINE_TYPE(LmpimDB, lmpim_db, G_TYPE_OBJECT);
+
+#define LMPIM_DB_GET_PRIVATE(o)\
+	(G_TYPE_INSTANCE_GET_PRIVATE((o), LMPIM_TYPE_DB, LmpimDBPrivate))
+
+struct _LmpimDBPrivate
+{
+	sqlite3 *handle;
+};
+
+
+static void
+lmpim_db_dispose(LmpimDB *self)
+{
+}
+
+static void
+lmpim_db_finalize(LmpimDB *self)
+{
+}
+
+static void
+lmpim_db_init(LmpimDB *self)
+{
+	LmpimDBPrivate *priv = LMPIM_DB_GET_PRIVATE(self);
+}
+
+static void
+lmpim_db_class_init(LmpimDBClass *self_class)
+{
+	GObjectClass *object_class = G_OBJECT_CLASS(self_class);
+
+	g_type_class_add_private(self_class, sizeof(LmpimDBPrivate));
+	object_class->dispose = (void (*)(GObject *object)) lmpim_db_dispose;
+	object_class->finalize = (void (*)(GObject *object)) lmpim_db_finalize;
+}
+
 gboolean
-db_table_exist(const char *table_name)
+db_table_exist(LmpimDB *self, const char *table_name)
 {
 	char *err;
 
+	LmpimDBPrivate *priv = LMPIM_DB_GET_PRIVATE(self);
+
 	char *cmd = g_strdup_printf("select * from sqlite_master where type = 'table' and name = '%s'", table_name);
-	int ret = sqlite3_exec(handle, cmd, NULL, NULL, &err);
+	int ret = sqlite3_exec(priv->handle, cmd, NULL, NULL, &err);
 	g_free(cmd);
 
 	if(ret == SQLITE_OK && err == NULL)
@@ -26,13 +65,14 @@ db_table_exist(const char *table_name)
 }
 
 int
-db_open(const char *filename)
+db_open(LmpimDB *self, const char *filename)
 {
 	int ret;
 	char *err;
 	char *cmd;
 
-	ret = sqlite3_open(filename, &handle);
+	LmpimDBPrivate *priv = LMPIM_DB_GET_PRIVATE(self);
+	ret = sqlite3_open(filename, &(priv->handle));
 	if(ret != SQLITE_OK)
 	{
 		fprintf(stderr, "Can't open file '%s'\n", filename);
@@ -43,24 +83,26 @@ db_open(const char *filename)
 }
 
 void
-db_close()
+db_close(LmpimDB *self)
 {
-	if(handle)
+	LmpimDBPrivate *priv = LMPIM_DB_GET_PRIVATE(self);
+	if(priv->handle)
 	{
-		sqlite3_close(handle);
-		handle = NULL;
+		sqlite3_close(priv->handle);
+		priv->handle = NULL;
 	}
 }
 
 gboolean 
-db_table_create(const char *table_name)
+db_table_create(LmpimDB *self, const char *table_name)
 {
 	char *err;
 
+	LmpimDBPrivate *priv = LMPIM_DB_GET_PRIVATE(self);
 	// 如果表不存在，就先创建表
 	char *cmd = g_strdup_printf("create table %s (code TEXT, chinese TEXT, freq INT)", table_name);
 
-	int ret = sqlite3_exec(handle, cmd, NULL, NULL, &err);
+	int ret = sqlite3_exec(priv->handle, cmd, NULL, NULL, &err);
 	g_free(cmd);
 
 	if(ret != SQLITE_OK)
@@ -77,12 +119,14 @@ db_table_create(const char *table_name)
 }
 
 gboolean
-db_insert(const char *table_name, CodeInfo *info)
+db_insert(LmpimDB *self, const char *table_name, CodeInfo *info)
 {
 	char *err;
 
 	if(!info)
 		return FALSE;
+
+	LmpimDBPrivate *priv = LMPIM_DB_GET_PRIVATE(self);
 
 	char *cmd = g_strdup_printf("insert into %s (code, chinese, freq) values('%s', '%s', '%d')", 
 			table_name, 
@@ -90,7 +134,7 @@ db_insert(const char *table_name, CodeInfo *info)
 			info->chinese,
 			info->freq);
 
-	int ret = sqlite3_exec(handle, cmd, NULL, NULL, &err);
+	int ret = sqlite3_exec(priv->handle, cmd, NULL, NULL, &err);
 	if(ret != SQLITE_OK)
 	{
 		if(err)
@@ -106,16 +150,18 @@ db_insert(const char *table_name, CodeInfo *info)
 }
 
 gboolean
-db_delete(const char *table_name, CodeInfo *info)
+db_delete(LmpimDB *self, const char *table_name, CodeInfo *info)
 {
 	char *err;
 
 	if(!info)
 		return FALSE;
 
+	LmpimDBPrivate *priv = LMPIM_DB_GET_PRIVATE(self);
+
 	char *cmd = g_strdup_printf("delete from %s where chinese = '%s'", table_name, info->chinese);
 
-	int ret = sqlite3_exec(handle, cmd, NULL, NULL, &err);
+	int ret = sqlite3_exec(priv->handle, cmd, NULL, NULL, &err);
 	g_free(cmd);
 
 	if(ret != SQLITE_OK)
@@ -132,12 +178,14 @@ db_delete(const char *table_name, CodeInfo *info)
 }
 
 gboolean
-db_delete_all(const char *table_name)
+db_delete_all(LmpimDB *self, const char *table_name)
 {
 	char *err;
 
+	LmpimDBPrivate *priv = LMPIM_DB_GET_PRIVATE(self);
+
 	char *cmd = g_strdup_printf("delete from %s", table_name);
-	int ret = sqlite3_exec(handle, cmd, NULL, NULL, &err);
+	int ret = sqlite3_exec(priv->handle, cmd, NULL, NULL, &err);
 	g_free(cmd);
 
 	if(ret != SQLITE_OK)
@@ -154,7 +202,7 @@ db_delete_all(const char *table_name)
 }
 
 int
-db_query(const char *table_name, const char *query, DBQueryCallback callback, gpointer user_data)
+db_query(LmpimDB *self, const char *table_name, const char *query, DBQueryCallback callback, gpointer user_data)
 {
 	char *cmd;
 	char *err;
@@ -162,10 +210,12 @@ db_query(const char *table_name, const char *query, DBQueryCallback callback, gp
 	if(!query)
 		return -1;
 
+	LmpimDBPrivate *priv = LMPIM_DB_GET_PRIVATE(self);
+
 	cmd = g_strdup_printf("select * from %s where code = '%%%s%%'\n", table_name, query);
 
 	g_print("%s\n", cmd);
-	int ret = sqlite3_exec(handle, cmd, callback, user_data, &err);
+	int ret = sqlite3_exec(priv->handle, cmd, callback, user_data, &err);
 	if(ret != SQLITE_OK)
 	{
 		if(err)
@@ -181,15 +231,17 @@ db_query(const char *table_name, const char *query, DBQueryCallback callback, gp
 }
 
 GPtrArray *
-db_query_wubi(const char *code)
+db_query_wubi(LmpimDB *self, const char *code)
 {
 	if(!code)
 		return NULL;
 
+	LmpimDBPrivate *priv = LMPIM_DB_GET_PRIVATE(self);
+
 	char *cmd = g_strdup_printf("select * from %s where code like '%s%%'\n", wubi_table_name, code);
 
 	sqlite3_stmt *stmt = NULL;
-	int ret = sqlite3_prepare_v2(handle, cmd, strlen(cmd), &stmt, NULL);
+	int ret = sqlite3_prepare_v2(priv->handle, cmd, strlen(cmd), &stmt, NULL);
 	if(ret != SQLITE_OK)
 	{
 		g_print("sqlite3_prepare_v2 failed, return %d\n", ret);
@@ -226,17 +278,19 @@ db_query_wubi(const char *code)
 
 // 反查汉字的五笔码
 gchar *
-db_query_wubi_code(const gchar *chinese)
+db_query_wubi_code(LmpimDB *self, const gchar *chinese)
 {
 	if(!chinese)
 		return NULL;
 
 	gchar *code = NULL;
 
+	LmpimDBPrivate *priv = LMPIM_DB_GET_PRIVATE(self);
+
 	char *cmd = g_strdup_printf("select * from %s where chinese = '%s'\n", wubi_table_name, chinese);
 
 	sqlite3_stmt *stmt;
-	sqlite3_prepare_v2(handle, cmd, strlen(cmd), &stmt, NULL);
+	sqlite3_prepare_v2(priv->handle, cmd, strlen(cmd), &stmt, NULL);
 
 	int ret = sqlite3_step(stmt);
 
@@ -254,15 +308,17 @@ db_query_wubi_code(const gchar *chinese)
 }
 
 GPtrArray *
-db_query_pinyin(const char *code)
+db_query_pinyin(LmpimDB *self, const char *code)
 {
 	if(!code)
 		return NULL;
 
+	LmpimDBPrivate *priv = LMPIM_DB_GET_PRIVATE(self);
+
 	char *cmd = g_strdup_printf("select * from %s where code = '%s'\n", pinyin_table_name, code);
 
 	sqlite3_stmt *stmt;
-	sqlite3_prepare_v2(handle, cmd, strlen(cmd), &stmt, NULL);
+	sqlite3_prepare_v2(priv->handle, cmd, strlen(cmd), &stmt, NULL);
 
 	GPtrArray *array = g_ptr_array_new();
 	g_ptr_array_set_free_func(array, (GDestroyNotify)g_free);
@@ -300,17 +356,19 @@ db_query_pinyin(const char *code)
 }
 
 gchar *
-db_query_symbol(gchar code)
+db_query_symbol(LmpimDB *self, gchar code)
 {
 	if(!code)
 		return NULL;
 
 	gchar *chinese = NULL;
 
+	LmpimDBPrivate *priv = LMPIM_DB_GET_PRIVATE(self);
+
 	char *cmd = g_strdup_printf("select * from %s where code = '%c'\n", symbol_table_name, code);
 
 	sqlite3_stmt *stmt;
-	sqlite3_prepare_v2(handle, cmd, strlen(cmd), &stmt, NULL);
+	sqlite3_prepare_v2(priv->handle, cmd, strlen(cmd), &stmt, NULL);
 
 	int ret = sqlite3_step(stmt);
 
