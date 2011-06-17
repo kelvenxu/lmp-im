@@ -1,5 +1,4 @@
 XIM=lmp
-XIM_PROGRAM=/usr/bin/ibus-daemon
 XIM_ARGS="--xim"
 if [ -e /usr/lib/gtk-3.0/*/immodules/im-lmp.so ]; then
     GTK_IM_MODULE=lmp

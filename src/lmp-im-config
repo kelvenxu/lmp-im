@@ -1,9 +1,7 @@
 #!/bin/sh
 
-mkdir -p $HOME/.lmp-im
-
-mkdir -p $HOME/.gtk-3.0
-gtk-query-immodules-3.0 > $HOME/.gtk-3.0/gtk.immodules
+gtk-query-immodules-3.0 --update-cache
+#im-switch -s lmp
 
 # If no root access, lmp-im modules and data can be installed like this:
 #   ~/.gtk-2.0/immodules/       - lmp-im.so or other immodules

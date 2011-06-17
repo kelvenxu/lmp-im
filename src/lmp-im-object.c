@@ -612,7 +612,9 @@ lmp_im_object_init(LmpIMObject *self)
 	priv->old_keyval = 0;
 
 	priv->db = g_object_new (LMPIM_TYPE_DB, NULL);
-	db_open(priv->db, DATADIR"/wubi.db");
+	db_open(priv->db, DATADIR"/lmp-table.db");
+
+	g_print ("%s %d\n", __func__, __LINE__);
 }
 
 static void
