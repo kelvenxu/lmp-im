@@ -20,7 +20,8 @@ im_lmp_la_LIBADD = @GTK3_LIBS@ -lsqlite3
 
 bin_SCRIPTS = lmp-im-config
 
-noinst_PROGRAMS = lmpim-test wubi-table pinyin-table symbol-table
+bin_PROGRAMS = lmpim-test
+noinst_PROGRAMS = wubi-table pinyin-table symbol-table
 
 lmpim_test_SOURCES = lmpim-test.c
 lmpim_test_LDADD = $(LDADDS)
