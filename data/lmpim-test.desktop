@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Lmp IM test
+Comment=Lmp IM test application
+TryExec=lmpim-test
+Exec=lmpim-test
+Icon=lmpim
+StartupNotify=true
+Terminal=true
+Type=Application
+Categories=GNOME;GTK;Utility;
