@@ -14,7 +14,6 @@ config.status
 lpim.spec
 *.swo
 
-
 Makefile
 Makefile.in
 
@@ -34,4 +33,20 @@ test-view
 POTFILES
 *.sed
 
+config.guess
+config.rpath
+config.sub
+depcomp
+install-sh
+lmp-im.spec
+ltmain.sh
+missing
 
+lmpim-test
+pinyin-table
+symbol-table
+wubi-table
+lmpim-test-gtk2
+pinyin-table-gtk2
+symbol-table-gtk2
+wubi-table-gtk2

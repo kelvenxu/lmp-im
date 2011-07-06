@@ -1,7 +1,12 @@
 #!/bin/sh
 
+echo -n "updating gtk.immodules... "
+/usr/bin/gtk-query-immodules-2.0 > /etc/gtk-2.0/gtk.immodules
+echo "done."
+
 gtk-query-immodules-3.0 --update-cache
-#im-switch -s lmp
+
+im-switch -s lmp
 
 # If no root access, lmp-im modules and data can be installed like this:
 #   ~/.gtk-2.0/immodules/       - lmp-im.so or other immodules

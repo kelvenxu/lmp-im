@@ -29,7 +29,11 @@ static const GtkIMContextInfo im_info =
 {
 	"lmp",
 	"Lmp input method",
+#if (GTK_MAJOR_VERSION == 2)
+	"gtk20",
+#else
 	"gtk30",
+#endif
 	"/usr/share/locale",
 	"zh"
 };

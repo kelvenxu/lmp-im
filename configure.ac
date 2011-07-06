@@ -15,12 +15,17 @@ AM_PROG_LIBTOOL
 #AM_PATH_GTK_2_0([2.0.0],,[AC_MSG_ERROR(GTK 2.0.0 or better is required.)])
 
 PKG_CHECK_MODULES(GTK3, [gtk+-3.0 >= 3.0.0])
-#PKG_CHECK_MODULES(GTK3, [gtk+-2.0 >= 2.0.0])
 
 GTK3_BINARY_VERSION="`pkg-config --variable=gtk_binary_version gtk+-3.0`"
 AC_SUBST([GTK3_CFLAGS])
 AC_SUBST([GTK3_LIBS])
 AC_SUBST([GTK3_BINARY_VERSION])
+
+PKG_CHECK_MODULES(GTK2, [gtk+-2.0 >= 2.0.0])
+GTK2_BINARY_VERSION="`pkg-config --variable=gtk_binary_version gtk+-2.0`"
+AC_SUBST([GTK2_CFLAGS])
+AC_SUBST([GTK2_LIBS])
+AC_SUBST([GTK2_BINARY_VERSION])
 
 GETTEXT_PACKAGE=lmp-im
 AC_SUBST(GETTEXT_PACKAGE)
@@ -35,6 +40,7 @@ AC_CONFIG_FILES([Makefile
                  lmp-im.spec
                  po/Makefile.in
                  src/Makefile
+								 gtk2/Makefile
 								 data/Makefile
                  ])
 AC_OUTPUT

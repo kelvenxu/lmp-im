@@ -4,7 +4,7 @@ stuffdir = $(pkgdatadir)
 other_data = wubi.txt pinyin.txt symbol.txt
 stuff_DATA = lmp-table.db
 
-desktop = lmpim-test.desktop
+desktop = lmpim-test-gtk2.desktop
 desktopdir = $(datadir)/applications
 desktop_DATA = $(desktop)
 

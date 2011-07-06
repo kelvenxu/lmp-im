@@ -231,7 +231,7 @@ lmp_im_window_set_candidate_range(LmpIMWindow *self, gint begin, gint end)
 		for(i = begin; i < end && i < priv->cand_arr->len && (i - begin) < CANDIDATE_NUM; ++i)
 		{
 			CodeInfo *info = g_ptr_array_index(priv->cand_arr, i);
-			g_string_append_printf(priv->cand_str, "%s<span color=\"#844798\"><sup>%d</sup><sub>%s</sub></span> ", info->chinese, i - begin, info->code);
+			g_string_append_printf(priv->cand_str, "<span size=\"large\">%s</span><span color=\"#844798\"><sup>%d</sup><sub>%s</sub></span>  ", info->chinese, i - begin, info->code);
 		}
 	}
 	else
@@ -239,7 +239,7 @@ lmp_im_window_set_candidate_range(LmpIMWindow *self, gint begin, gint end)
 		for(i = begin; i < end && i < priv->cand_arr->len && (i - begin) < CANDIDATE_NUM; ++i)
 		{
 			CodeInfo *info = g_ptr_array_index(priv->cand_arr, i);
-			g_string_append_printf(priv->cand_str, "%s<span color=\"#844798\"><sup>%d</sup></span> ", info->chinese, i - begin);
+			g_string_append_printf(priv->cand_str, "<span size=\"large\">%s</span><span color=\"#844798\"><sup>%d</sup></span>  ", info->chinese, i - begin);
 		}
 	}
 
