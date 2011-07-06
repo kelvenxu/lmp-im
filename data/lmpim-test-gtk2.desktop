@@ -1,8 +1,8 @@
 [Desktop Entry]
-Name=Lmp IM test
-Comment=Lmp IM test application
-TryExec=lmpim-test
-Exec=lmpim-test
+Name=Lmp IM test GTK2
+Comment=Lmp IM test application for Gtk+ 2.0
+TryExec=lmpim-test-gtk2
+Exec=lmpim-test-gtk2	
 Icon=lmpim
 StartupNotify=true
 Terminal=true

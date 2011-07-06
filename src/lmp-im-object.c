@@ -492,6 +492,7 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 
 	if(event->type == GDK_KEY_RELEASE && event->keyval == GDK_KEY_space && event->state & GDK_CONTROL_MASK)
 	{
+		g_print("CTRL + |_|\n");
 		lmp_im_window_clear(LMP_IM_WINDOW(priv->im_window));
 		gtk_widget_hide(priv->im_window);
 

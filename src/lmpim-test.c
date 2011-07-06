@@ -55,6 +55,12 @@ static void print_symbol()
 	fprintf(stderr, "GDK_KEY_asciitilde: %c\n",  GDK_KEY_asciitilde );
 }
 
+static void
+print_gtk_version()
+{
+	fprintf(stderr, "\nGTK+-%d.%d.%d.\n", GTK_MAJOR_VERSION, GTK_MINOR_VERSION, GTK_MICRO_VERSION);
+}
+
 int main( int   argc,
 		char *argv[] )
 {
@@ -84,7 +90,11 @@ int main( int   argc,
 
 	gtk_widget_show_all(window);
 
+#if 0
 	print_symbol();
+#endif
+
+	print_gtk_version();
 	gtk_main();
 
 	g_object_unref(text_buffer);

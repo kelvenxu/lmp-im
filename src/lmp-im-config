@@ -2,6 +2,8 @@
 
 echo -n "updating gtk.immodules... "
 /usr/bin/gtk-query-immodules-2.0 > /etc/gtk-2.0/gtk.immodules
+cp /etc/gtk-2.0/gtk.immodules /usr/lib/gtk-2.0/2.10.0/gtk.immodules
+
 echo "done."
 
 gtk-query-immodules-3.0 --update-cache
