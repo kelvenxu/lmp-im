@@ -46,6 +46,7 @@ struct _LmpIMObjectPrivate
 	guint old_keyval;
 
 	LmpimDB *db;
+	gchar *db_filename;
 };
 
 static void     
@@ -210,7 +211,7 @@ lmp_im_object_wubi_mode(GtkIMContext *context, GdkEventKey *event)
 				if(!array)
 				{
 					db_close(priv->db);
-					db_open(priv->db, DATADIR"/lmp-table.db");
+					db_open(priv->db, priv->db_filename);
 					array = db_query_wubi(priv->db, code);
 				}
 
@@ -585,6 +586,26 @@ lmp_im_object_focus_out(GtkIMContext *context)
 	gtk_widget_hide(priv->im_window);
 }
 
+static void
+lmp_im_object_install_db(LmpIMObject *self)
+{
+	LmpIMObjectPrivate *priv = LMP_IM_OBJECT_GET_PRIVATE(self);
+
+	const gchar *homedir = g_getenv("HOME");
+	priv->db_filename = g_build_filename(homedir, ".lmpim", "lmp-table.db", NULL);
+	
+	if(!g_file_test(priv->db_filename, G_FILE_TEST_IS_REGULAR))
+	{
+		gchar *path = g_build_filename(homedir, ".lmpim", NULL);
+		g_mkdir_with_parents(path, 0777);
+		g_free(path);
+
+		GFile *src = g_file_new_for_path(DATADIR"/lmp-table.db");
+		GFile *des = g_file_new_for_path(priv->db_filename);
+		g_file_copy(src, des, G_FILE_COPY_NONE, NULL, NULL, NULL, NULL);
+	}
+}
+
 static void     
 lmp_im_object_reset(GtkIMContext *context)
 {
@@ -616,6 +637,12 @@ lmp_im_object_dispose(LmpIMObject *self)
 {
 	LmpIMObjectPrivate *priv = LMP_IM_OBJECT_GET_PRIVATE(self);
 
+	if(priv->db_filename)
+	{
+		g_free(priv->db_filename);
+		priv->db_filename = NULL;
+	}
+
 	db_close(priv->db);
 }
 
@@ -634,14 +661,13 @@ lmp_im_object_init(LmpIMObject *self)
 
 	gtk_im_context_set_use_preedit(GTK_IM_CONTEXT(self), FALSE);
 
-	//priv->english_mode = TRUE; //输入法默认不应开启
 	priv->mode = LMP_IM_MODE_ENGLISH;
 	priv->old_keyval = 0;
 
-	priv->db = g_object_new (LMPIM_TYPE_DB, NULL);
-	db_open(priv->db, DATADIR"/lmp-table.db");
+	priv->db = g_object_new(LMPIM_TYPE_DB, NULL);
 
-	g_print ("%s %d\n", __func__, __LINE__);
+	lmp_im_object_install_db(self);
+	db_open(priv->db, priv->db_filename);
 }
 
 static void
