@@ -56,7 +56,7 @@ struct _LmpIMWindowPrivate
 
 enum
 {
-	CANDIDATE_NUM = 10,
+	CANDIDATE_NUM = 5,
 };
 
 static void
@@ -226,14 +226,17 @@ lmp_im_window_set_candidate_range(LmpIMWindow *self, gint begin, gint end)
 	
 	g_string_erase(priv->cand_str, 0, -1);
 
-	if(priv->mode == LMP_IM_MODE_PINYIN)
+	//if(priv->mode == LMP_IM_MODE_PINYIN)
 	{
 		for(i = begin; i < end && i < priv->cand_arr->len && (i - begin) < CANDIDATE_NUM; ++i)
 		{
 			CodeInfo *info = g_ptr_array_index(priv->cand_arr, i);
-			g_string_append_printf(priv->cand_str, "<span size=\"large\">%s</span><span color=\"#844798\"><sup>%d</sup><sub>%s</sub></span>  ", info->chinese, i - begin, info->code);
+			g_string_append_printf(priv->cand_str, 
+					"<span size=\"large\">%s</span><span color=\"#844798\"><sup>%d</sup><sub>%s</sub></span>  ", 
+					info->chinese, i - begin, info->code);
 		}
 	}
+#if 0
 	else
 	{
 		for(i = begin; i < end && i < priv->cand_arr->len && (i - begin) < CANDIDATE_NUM; ++i)
@@ -242,6 +245,7 @@ lmp_im_window_set_candidate_range(LmpIMWindow *self, gint begin, gint end)
 			g_string_append_printf(priv->cand_str, "<span size=\"large\">%s</span><span color=\"#844798\"><sup>%d</sup></span>  ", info->chinese, i - begin);
 		}
 	}
+#endif
 
 	lmp_im_window_set_cand_text(self, priv->cand_str->str);
 }

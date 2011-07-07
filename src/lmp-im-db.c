@@ -230,6 +230,26 @@ db_query(LmpimDB *self, const char *table_name, const char *query, DBQueryCallba
 	return ret;
 }
 
+#if 0
+//按freq的大小从大到小排序，即將使用频率高放在最前面 
+static gint
+db_code_info_compare_freq(CodeInfo *c1, CodeInfo *c2)
+{
+	if (strlen(c1->code) > strlen(c2->code))
+	{
+		return -1;
+	}
+	else if (strlen(c1->code) < strlen(c2->code))
+	{
+		return 1;
+	}
+	else
+	{
+		return (c2->freq - c1->freq);
+	}
+}
+#endif
+
 GPtrArray *
 db_query_wubi(LmpimDB *self, const char *code)
 {
@@ -273,6 +293,7 @@ db_query_wubi(LmpimDB *self, const char *code)
 
 	sqlite3_finalize(stmt);
 
+	//g_ptr_array_sort (array, (GCompareFunc)db_code_info_compare_freq);
 	return array;
 }
 
@@ -315,7 +336,7 @@ db_query_pinyin(LmpimDB *self, const char *code)
 
 	LmpimDBPrivate *priv = LMPIM_DB_GET_PRIVATE(self);
 
-	char *cmd = g_strdup_printf("select * from %s where code = '%s'\n", pinyin_table_name, code);
+	char *cmd = g_strdup_printf("select * from %s where code = '%s' order by freq desc\n", pinyin_table_name, code);
 
 	sqlite3_stmt *stmt;
 	sqlite3_prepare_v2(priv->handle, cmd, strlen(cmd), &stmt, NULL);
@@ -327,6 +348,7 @@ db_query_pinyin(LmpimDB *self, const char *code)
 
 	while(ret == SQLITE_ROW)
 	{
+#if 0
 		const unsigned char *code = sqlite3_column_text(stmt, 0);
 		const unsigned char *chinese = sqlite3_column_text(stmt, 1);
 
@@ -346,6 +368,19 @@ db_query_pinyin(LmpimDB *self, const char *code)
 
 			p = g_utf8_next_char(p);
 		}
+#endif
+
+		CodeInfo *info = g_new0(CodeInfo, 1);
+
+		const unsigned char *code = sqlite3_column_text(stmt, 0);
+		info->code = g_strdup(code);
+
+		const unsigned char *chinese = sqlite3_column_text(stmt, 1);
+		info->chinese = g_strdup(chinese);
+
+		info->freq = sqlite3_column_int(stmt, 2);
+
+		g_ptr_array_add(array, info);
 
 		ret = sqlite3_step(stmt);
 	}

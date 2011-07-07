@@ -38,12 +38,14 @@ int main(int argc, char *argv[])
 	char character[LINE_CHARS];
 	int freq;
 
+	g_type_init ();
+
 	LmpimDB *db = g_object_new(LMPIM_TYPE_DB, NULL);
 
-	FILE *fp = fopen("pinyin.txt", "r");
+	FILE *fp = fopen("pinyin-2.txt", "r");
 	if(!fp)
 	{
-		fprintf(stderr, "Can't open pinyin.txt\n");
+		fprintf(stderr, "Can't open pinyin-2.txt\n");
 		return -1;
 	}
 
@@ -52,6 +54,8 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "Can't open lmp-table.db\n");
 		return -1;
 	}
+
+	db_table_create (db, DB_TABLE_PINYIN);
 
 	while(!feof(fp))
 	{
