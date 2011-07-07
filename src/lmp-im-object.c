@@ -140,6 +140,29 @@ lmp_im_object_query_wubi_code(LmpIMObject *im, GPtrArray *arr)
 	}
 }
 
+void 
+lmp_im_update_db_freq(LmpIMObject *im, CodeInfo *info)
+{
+	g_return_if_fail(LMP_IM_IS_OBJECT(im));
+	g_return_if_fail(info != NULL);
+
+	LmpIMObjectPrivate *priv = LMP_IM_OBJECT_GET_PRIVATE(im);
+
+	info->freq++;
+
+	switch(priv->mode)
+	{
+		case LMP_IM_MODE_PINYIN:
+			db_update_pinyin_freq (priv->db, info);	
+			break;
+		case LMP_IM_MODE_WUBI:
+			db_update_wubi_freq (priv->db, info);	
+			break;
+		default:
+			break;
+	}
+}
+
 static gboolean
 lmp_im_object_wubi_mode(GtkIMContext *context, GdkEventKey *event)
 {
@@ -224,10 +247,13 @@ lmp_im_object_wubi_mode(GtkIMContext *context, GdkEventKey *event)
 		gint index = event->keyval - GDK_KEY_0;
 		if(lmp_im_window_has_candidate(LMP_IM_WINDOW(priv->im_window)))
 		{
-			const gchar *chinese = lmp_im_window_candidate_index(LMP_IM_WINDOW(priv->im_window), index);
-			g_signal_emit_by_name(im, "commit", chinese);
+			CodeInfo *info = lmp_im_window_candidate_index(LMP_IM_WINDOW(priv->im_window), index);
+			//const gchar *chinese = lmp_im_window_candidate_index(LMP_IM_WINDOW(priv->im_window), index);
+			g_signal_emit_by_name(im, "commit", info->chinese);
 			lmp_im_window_clear(LMP_IM_WINDOW(priv->im_window));
 			gtk_widget_hide(priv->im_window);
+
+			lmp_im_update_db_freq(im, info);
 
 			return TRUE;
 		}
@@ -244,10 +270,10 @@ lmp_im_object_wubi_mode(GtkIMContext *context, GdkEventKey *event)
 		// 按空格，选择第一个
 		if(lmp_im_window_has_candidate(LMP_IM_WINDOW(priv->im_window)))
 		{
-			const char *chinese = lmp_im_window_candidate_index(LMP_IM_WINDOW(priv->im_window), 0);
-			if(chinese)
+			CodeInfo *info = lmp_im_window_candidate_index(LMP_IM_WINDOW(priv->im_window), 0);
+			if(info)
 			{
-				g_signal_emit_by_name(im, "commit", chinese);
+				g_signal_emit_by_name(im, "commit", info->chinese);
 			}
 
 			lmp_im_window_clear(LMP_IM_WINDOW(priv->im_window));

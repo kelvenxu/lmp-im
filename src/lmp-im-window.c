@@ -358,19 +358,20 @@ lmp_im_window_page_down(LmpIMWindow *self)
 	}
 }
 
-const gchar *
+CodeInfo*
 lmp_im_window_candidate_index(LmpIMWindow *self, gint index)
 {
+	CodeInfo *info = NULL;
 	LmpIMWindowPrivate *priv = LMP_IM_WINDOW_GET_PRIVATE(self);
 
 	gint id = index + priv->cand_page * CANDIDATE_NUM;
 	if(priv->cand_arr && index >= 0 && index < priv->cand_arr->len)
 	{
-		CodeInfo *info = g_ptr_array_index(priv->cand_arr, id);
-		return info->chinese;
+		info = g_ptr_array_index(priv->cand_arr, id);
+		//return info->chinese;
 	}
 
-	return NULL;
+	return info;
 }
 
 gboolean 

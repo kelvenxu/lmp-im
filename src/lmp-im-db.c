@@ -5,9 +5,9 @@
 #include <stdio.h>
 #include <string.h>
 
-static char* wubi_table_name = "wubi_all";
-static char* pinyin_table_name = "pinyin_all";
-static char* symbol_table_name = "symbol_all";
+//static char* wubi_table_name = "wubi_all";
+//static char* pinyin_table_name = "pinyin_all";
+//static char* symbol_table_name = "symbol_all";
 
 
 G_DEFINE_TYPE(LmpimDB, lmpim_db, G_TYPE_OBJECT);
@@ -116,6 +116,49 @@ db_table_create(LmpimDB *self, const char *table_name)
 	}
 
 	return TRUE;
+}
+
+gboolean
+db_update_freq(LmpimDB *self, const char *table, CodeInfo *info)
+{
+	if(!self || !table || !info)
+		return FALSE;
+
+	char *err;
+	char *cmd = g_strdup_printf("update %s set freq = '%d' where chinese = '%s'", 
+			table,
+			info->freq,
+			info->chinese);
+
+	g_print("cmd: %s\n", cmd);
+
+	LmpimDBPrivate *priv = LMPIM_DB_GET_PRIVATE(self);
+
+	int ret = sqlite3_exec(priv->handle, cmd, NULL, NULL, &err);
+	if(ret != SQLITE_OK)
+	{
+		if(err)
+		{
+			g_print("database error: %s\n", err);
+			sqlite3_free(err);
+			return FALSE;
+		}
+	}
+
+	g_free(cmd);
+	return TRUE;
+}
+
+gboolean
+db_update_wubi_freq(LmpimDB *self, CodeInfo *info)
+{
+	return db_update_freq (self, DB_TABLE_WUBI, info);
+}
+
+gboolean
+db_update_pinyin_freq(LmpimDB *self, CodeInfo *info)
+{
+	return db_update_freq (self, DB_TABLE_PINYIN, info);
 }
 
 gboolean
@@ -258,7 +301,7 @@ db_query_wubi(LmpimDB *self, const char *code)
 
 	LmpimDBPrivate *priv = LMPIM_DB_GET_PRIVATE(self);
 
-	char *cmd = g_strdup_printf("select * from %s where code like '%s%%'\n", wubi_table_name, code);
+	char *cmd = g_strdup_printf("select * from %s where code like '%s%%'\n", DB_TABLE_WUBI, code);
 
 	sqlite3_stmt *stmt = NULL;
 	int ret = sqlite3_prepare_v2(priv->handle, cmd, strlen(cmd), &stmt, NULL);
@@ -308,7 +351,7 @@ db_query_wubi_code(LmpimDB *self, const gchar *chinese)
 
 	LmpimDBPrivate *priv = LMPIM_DB_GET_PRIVATE(self);
 
-	char *cmd = g_strdup_printf("select * from %s where chinese = '%s'\n", wubi_table_name, chinese);
+	char *cmd = g_strdup_printf("select * from %s where chinese = '%s'\n", DB_TABLE_WUBI, chinese);
 
 	sqlite3_stmt *stmt;
 	sqlite3_prepare_v2(priv->handle, cmd, strlen(cmd), &stmt, NULL);
@@ -336,7 +379,7 @@ db_query_pinyin(LmpimDB *self, const char *code)
 
 	LmpimDBPrivate *priv = LMPIM_DB_GET_PRIVATE(self);
 
-	char *cmd = g_strdup_printf("select * from %s where code = '%s' order by freq desc\n", pinyin_table_name, code);
+	char *cmd = g_strdup_printf("select * from %s where code = '%s' order by freq desc\n", DB_TABLE_PINYIN, code);
 
 	sqlite3_stmt *stmt;
 	sqlite3_prepare_v2(priv->handle, cmd, strlen(cmd), &stmt, NULL);
@@ -400,7 +443,7 @@ db_query_symbol(LmpimDB *self, gchar code)
 
 	LmpimDBPrivate *priv = LMPIM_DB_GET_PRIVATE(self);
 
-	char *cmd = g_strdup_printf("select * from %s where code = '%c'\n", symbol_table_name, code);
+	char *cmd = g_strdup_printf("select * from %s where code = '%c'\n", DB_TABLE_SYMBOL, code);
 
 	sqlite3_stmt *stmt;
 	sqlite3_prepare_v2(priv->handle, cmd, strlen(cmd), &stmt, NULL);

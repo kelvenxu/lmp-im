@@ -64,8 +64,8 @@ void          lmp_im_window_clear            (LmpIMWindow *self);
 
 int           lmp_im_window_backspace        (LmpIMWindow *self);
 
-void          lmp_im_window_set_candidate    (LmpIMWindow *self, GPtrArray *arr);
-const gchar * lmp_im_window_candidate_index  (LmpIMWindow *self, gint index);
+void          lmp_im_window_set_candidate (LmpIMWindow *self, GPtrArray *arr);
+CodeInfo * lmp_im_window_candidate_index  (LmpIMWindow *self, gint index);
 
 void          lmp_im_window_append_code_char (LmpIMWindow *self, gchar ch);
 const gchar * lmp_im_window_get_code         (LmpIMWindow *self);

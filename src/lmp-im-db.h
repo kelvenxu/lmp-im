@@ -53,6 +53,10 @@ GPtrArray * db_query_pinyin(LmpimDB *self, const char *code);
 gchar * db_query_symbol(LmpimDB *self, char code);
 gchar * db_query_wubi_code(LmpimDB *self, const gchar *chinese);
 
+gboolean db_update_freq(LmpimDB *self, const char *table, CodeInfo *info);
+gboolean db_update_wubi_freq(LmpimDB *self, CodeInfo *info);
+gboolean db_update_pinyin_freq(LmpimDB *self, CodeInfo *info);
+
 G_END_DECLS
 
 #endif /*__LMP_IM_DB__H__ */
