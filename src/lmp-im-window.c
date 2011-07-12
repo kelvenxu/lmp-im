@@ -140,13 +140,13 @@ lmp_im_window_set_code_text(LmpIMWindow *self, const gchar *str)
 	{
 		if(strlen(str) > 1)
 		{
-			gchar *s = g_strdup_printf("拼 %s", &(str[1]));
-			gtk_label_set_text(GTK_LABEL(priv->code_label), s);
+			gchar *s = g_strdup_printf("<span size=\"large\">拼 %s</span>", &(str[1]));
+			gtk_label_set_markup(GTK_LABEL(priv->code_label), s);
 			g_free(s);
 		}
 		else
 		{
-			gtk_label_set_markup(GTK_LABEL(priv->code_label), "拼 ");
+			gtk_label_set_markup(GTK_LABEL(priv->code_label), "<span size=\"large\">拼 </span>");
 		}
 	}
 	else
