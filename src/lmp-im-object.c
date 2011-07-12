@@ -622,13 +622,38 @@ lmp_im_object_set_cursor_location(GtkIMContext *context, GdkRectangle *area)
 	{
 		gint x;
 		gint y;
+		gint self_w;
+		gint self_h;
 
 		gdk_window_get_origin(priv->client_window, &x, &y);
 
 		GdkDisplay *display = gdk_display_get_default();
 		gint cursor_size = gdk_display_get_default_cursor_size(display);
 
-		lmp_im_window_move(LMP_IM_WINDOW(priv->im_window), x + area->x, y + area->y + cursor_size);
+		GdkWindow *root_window = gdk_get_default_root_window();
+		gint root_w = gdk_window_get_width(root_window);
+		gint root_h = gdk_window_get_height(root_window);
+
+		gtk_window_get_size(GTK_WINDOW(priv->im_window), &self_w, &self_h);
+
+		gint abs_x = x + area->x;
+		gint abs_y = y + area->y;
+
+		if(abs_x + self_w > root_w)
+		{
+			abs_x = root_w - self_w;
+		}
+
+		if(abs_y + cursor_size + self_h >= root_h)
+		{
+			abs_y = abs_y - self_h - 4; // 输入法窗口与客户窗口离开一点，不要靠得太近。
+		}
+		else
+		{
+			abs_y = abs_y + cursor_size + 4;
+		}
+
+		lmp_im_window_move(LMP_IM_WINDOW(priv->im_window), abs_x, abs_y);
 	}
 }
 

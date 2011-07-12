@@ -232,8 +232,10 @@ lmp_im_window_set_candidate_range(LmpIMWindow *self, gint begin, gint end)
 		{
 			CodeInfo *info = g_ptr_array_index(priv->cand_arr, i);
 			g_string_append_printf(priv->cand_str, 
-					"<span size=\"large\">%s</span><span color=\"#844798\"><sup>%d</sup><sub>%s</sub></span>  ", 
-					info->chinese, i - begin, info->code);
+					"<span size=\"large\">%d.%s</span><span color=\"#844798\" size=\"large\">(%s)</span>  ", 
+					i - begin,
+					info->chinese, 
+					info->code);
 		}
 	}
 #if 0
@@ -431,26 +433,10 @@ lmp_im_window_show(LmpIMWindow *self)
 void
 lmp_im_window_move(LmpIMWindow *self, int x, int y)
 {
-	int root_w; 
-	int root_h;
-	int self_w;
-	int self_h;
-
 	LmpIMWindowPrivate *priv = LMP_IM_WINDOW_GET_PRIVATE(self);
 
-	GdkWindow *root_window = gdk_get_default_root_window();
-	//gdk_drawable_get_size(GDK_DRAWABLE(root_window), &root_w, &root_h);
-	root_w = gdk_window_get_width(root_window);
-	root_h = gdk_window_get_height(root_window);
-	gtk_window_get_size(GTK_WINDOW(self), &self_w, &self_h);
-
-	if(x + self_w > root_w)
-	{
-		x = root_w - self_w;
-	}
-
 	priv->position_x = x;
-	priv->position_y = y + 4;
+	priv->position_y = y;
 	gtk_window_move(GTK_WINDOW(self), priv->position_x, priv->position_y);
 }
 
