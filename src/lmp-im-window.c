@@ -259,29 +259,6 @@ lmp_im_window_set_candidate(LmpIMWindow *self, GPtrArray *arr)
 
 	priv->cand_arr = arr;
 	
-#if 0
-	gint i = 0;
-	
-	if(priv->mode == LMP_IM_MODE_PINYIN)
-	{
-		for(i = 0; i < arr->len && i < CANDIDATE_NUM; ++i)
-		{
-			CodeInfo *info = g_ptr_array_index(arr, i);
-			g_string_append_printf(priv->cand_str, "<b>%s</b><span color=\"#844798\"><sup>%d</sup>%s</span> ", info->chinese, i, info->code);
-		}
-	}
-	else
-	{
-		for(i = 0; i < arr->len && i < CANDIDATE_NUM; ++i)
-		{
-			CodeInfo *info = g_ptr_array_index(arr, i);
-			g_string_append_printf(priv->cand_str, "<b>%s</b><span color=\"#844798\"><sup>%d</sup></span> ", info->chinese, i);
-		}
-	}
-
-	lmp_im_window_set_cand_text(self, priv->cand_str->str);
-#endif
-
 	lmp_im_window_set_candidate_range(self, 0, CANDIDATE_NUM);
 
 	priv->cand_page = 0;
@@ -367,10 +344,10 @@ lmp_im_window_candidate_index(LmpIMWindow *self, gint index)
 	LmpIMWindowPrivate *priv = LMP_IM_WINDOW_GET_PRIVATE(self);
 
 	gint id = index + priv->cand_page * CANDIDATE_NUM;
-	if(priv->cand_arr && index >= 0 && index < priv->cand_arr->len)
+
+	if(priv->cand_arr && id >= 0 && id < priv->cand_arr->len)
 	{
 		info = g_ptr_array_index(priv->cand_arr, id);
-		//return info->chinese;
 	}
 
 	return info;

@@ -249,12 +249,14 @@ lmp_im_object_wubi_mode(GtkIMContext *context, GdkEventKey *event)
 		if(lmp_im_window_has_candidate(LMP_IM_WINDOW(priv->im_window)))
 		{
 			CodeInfo *info = lmp_im_window_candidate_index(LMP_IM_WINDOW(priv->im_window), index);
-			//const gchar *chinese = lmp_im_window_candidate_index(LMP_IM_WINDOW(priv->im_window), index);
-			g_signal_emit_by_name(im, "commit", info->chinese);
-			lmp_im_window_clear(LMP_IM_WINDOW(priv->im_window));
-			gtk_widget_hide(priv->im_window);
+			if(info)
+			{
+				g_signal_emit_by_name(im, "commit", info->chinese);
+				lmp_im_window_clear(LMP_IM_WINDOW(priv->im_window));
+				gtk_widget_hide(priv->im_window);
 
-			lmp_im_update_db_freq(im, info);
+				lmp_im_update_db_freq(im, info);
+			}
 
 			return TRUE;
 		}
