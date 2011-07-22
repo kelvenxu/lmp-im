@@ -78,6 +78,7 @@ void lmp_im_window_move      (LmpIMWindow *self, int x, int y);
 
 void lmp_im_window_page_up   (LmpIMWindow *self);
 void lmp_im_window_page_down (LmpIMWindow *self);
+void lmp_im_window_page_first(LmpIMWindow *self);
 
 void lmp_im_window_set_mode(LmpIMWindow *self, LmpIMMode mode);
 

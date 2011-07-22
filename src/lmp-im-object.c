@@ -218,6 +218,8 @@ lmp_im_object_wubi_mode(GtkIMContext *context, GdkEventKey *event)
 				if(array && array->len > 0)
 				{
 					lmp_im_window_set_candidate(LMP_IM_WINDOW(priv->im_window), array);
+					lmp_im_window_page_first(LMP_IM_WINDOW(priv->im_window));
+					g_ptr_array_free(array, FALSE);
 				}
 			}
 			else
@@ -252,11 +254,13 @@ lmp_im_object_wubi_mode(GtkIMContext *context, GdkEventKey *event)
 			if(info)
 			{
 				g_signal_emit_by_name(im, "commit", info->chinese);
-				lmp_im_window_clear(LMP_IM_WINDOW(priv->im_window));
-				gtk_widget_hide(priv->im_window);
 
 				lmp_im_update_db_freq(im, info);
 			}
+
+			db_reset(priv->db);
+			lmp_im_window_clear(LMP_IM_WINDOW(priv->im_window));
+			gtk_widget_hide(priv->im_window);
 
 			return TRUE;
 		}
@@ -279,8 +283,10 @@ lmp_im_object_wubi_mode(GtkIMContext *context, GdkEventKey *event)
 				g_signal_emit_by_name(im, "commit", info->chinese);
 			}
 
+			db_reset(priv->db);
 			lmp_im_window_clear(LMP_IM_WINDOW(priv->im_window));
 			gtk_widget_hide(priv->im_window);
+
 			return TRUE;
 		}
 		else if(lmp_im_window_has_code(LMP_IM_WINDOW(priv->im_window)))
@@ -298,6 +304,29 @@ lmp_im_object_wubi_mode(GtkIMContext *context, GdkEventKey *event)
 	if(event->keyval == GDK_KEY_equal) 
 	{
 		// "="号翻页
+		const gchar *code = lmp_im_window_get_code(LMP_IM_WINDOW(priv->im_window));
+		if(code)
+		{
+			GPtrArray *array = NULL;
+			db_query_next(priv->db);
+			if(priv->mode == LMP_IM_MODE_PINYIN)
+			{
+				array = db_query_pinyin(priv->db, &(code[1]));
+				lmp_im_object_query_wubi_code(im, array);
+			}
+			else if(priv->mode == LMP_IM_MODE_WUBI)
+			{
+				array = db_query_wubi(priv->db, code);
+			}
+
+			if(array && array->len > 0)
+			{
+				g_print("array: %p len: %d\n", array, array->len);
+				lmp_im_window_set_candidate(LMP_IM_WINDOW(priv->im_window), array);
+				g_ptr_array_free(array, FALSE);
+			}
+		}
+
 		if(lmp_im_window_has_candidate(LMP_IM_WINDOW(priv->im_window)))
 		{
 			lmp_im_window_page_down(LMP_IM_WINDOW(priv->im_window));
@@ -305,6 +334,7 @@ lmp_im_object_wubi_mode(GtkIMContext *context, GdkEventKey *event)
 		}
 		else
 		{
+			// 输入“=“
 			if(lmp_im_window_has_code(LMP_IM_WINDOW(priv->im_window)))
 			{
 				const gchar *code = lmp_im_window_get_code(LMP_IM_WINDOW(priv->im_window));
@@ -331,6 +361,7 @@ lmp_im_object_wubi_mode(GtkIMContext *context, GdkEventKey *event)
 		}
 		else
 		{
+			// 输入"-"
 			if(lmp_im_window_has_code(LMP_IM_WINDOW(priv->im_window)))
 			{
 				const gchar *code = lmp_im_window_get_code(LMP_IM_WINDOW(priv->im_window));
@@ -431,25 +462,27 @@ lmp_im_object_wubi_mode(GtkIMContext *context, GdkEventKey *event)
 			GPtrArray *array = NULL;
 			if(code[0] == 'z') // 当是z开头时,输入拼音查询
 			{
-				array = db_query_pinyin(priv->db, &(code[1]));
 				priv->mode = LMP_IM_MODE_PINYIN;
-
 				lmp_im_window_set_mode(LMP_IM_WINDOW(priv->im_window), LMP_IM_MODE_PINYIN);
 
+				array = db_query_pinyin(priv->db, &(code[1]));
 				lmp_im_object_query_wubi_code(im, array);
 			}
 			else
 			{
-				array = db_query_wubi(priv->db, code);
 				priv->mode = LMP_IM_MODE_WUBI;
-
 				lmp_im_window_set_mode(LMP_IM_WINDOW(priv->im_window), LMP_IM_MODE_WUBI);
+
+				array = db_query_wubi(priv->db, code);
 			}
 
 			if(array && array->len > 0)
 			{
 				lmp_im_window_show(LMP_IM_WINDOW(priv->im_window));
 				lmp_im_window_set_candidate(LMP_IM_WINDOW(priv->im_window), array);
+				lmp_im_window_page_first(LMP_IM_WINDOW(priv->im_window));
+
+				g_ptr_array_free(array, FALSE);
 			}
 			else
 			{
@@ -545,9 +578,10 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 		return FALSE;
 	}
 
-	if(event->type == GDK_KEY_PRESS && event->keyval == GDK_KEY_space && event->state & GDK_CONTROL_MASK)
+	if(event->type == GDK_KEY_PRESS 
+			&& event->keyval == GDK_KEY_space 
+			&& (event->state & GDK_CONTROL_MASK))
 	{
-		//priv->old_keyval = event->keyval;
 		return FALSE;
 	}
 

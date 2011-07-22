@@ -18,6 +18,8 @@ G_DEFINE_TYPE(LmpimDB, lmpim_db, G_TYPE_OBJECT);
 struct _LmpimDBPrivate
 {
 	sqlite3 *handle;
+	int page_size;
+	int offset;
 };
 
 
@@ -35,6 +37,10 @@ static void
 lmpim_db_init(LmpimDB *self)
 {
 	LmpimDBPrivate *priv = LMPIM_DB_GET_PRIVATE(self);
+	priv->handle = NULL;
+
+	priv->page_size = 3;
+	priv->offset = 0;
 }
 
 static void
@@ -62,6 +68,13 @@ db_table_exist(LmpimDB *self, const char *table_name)
 		return TRUE;
 	else
 		return FALSE;
+}
+
+db_reset(LmpimDB *self)
+{
+	LmpimDBPrivate *priv = LMPIM_DB_GET_PRIVATE(self);
+	priv->page_size = 3;
+	priv->offset = 0;
 }
 
 int
@@ -121,20 +134,21 @@ db_table_create(LmpimDB *self, const char *table_name)
 gboolean
 db_update_freq(LmpimDB *self, const char *table, CodeInfo *info)
 {
+	char *err;
+	char *cmd;
+	int ret;
+
 	if(!self || !table || !info)
 		return FALSE;
 
-	char *err;
-	char *cmd = g_strdup_printf("update %s set freq = '%d' where chinese = '%s'", 
+	cmd = g_strdup_printf("update %s set freq = '%d' where chinese = '%s'", 
 			table,
 			info->freq,
 			info->chinese);
 
-	g_print("cmd: %s\n", cmd);
-
 	LmpimDBPrivate *priv = LMPIM_DB_GET_PRIVATE(self);
 
-	int ret = sqlite3_exec(priv->handle, cmd, NULL, NULL, &err);
+	ret = sqlite3_exec(priv->handle, cmd, NULL, NULL, &err);
 	if(ret != SQLITE_OK)
 	{
 		if(err)
@@ -293,15 +307,41 @@ db_code_info_compare_freq(CodeInfo *c1, CodeInfo *c2)
 }
 #endif
 
+void
+db_query_next(LmpimDB *self)
+{
+	g_return_if_fail(LMPIM_IS_DB(self));
+	LmpimDBPrivate *priv = LMPIM_DB_GET_PRIVATE(self);
+
+	priv->offset += priv->page_size;
+}
+
+void
+db_query_previous(LmpimDB *self)
+{
+	g_return_if_fail(LMPIM_IS_DB(self));
+	LmpimDBPrivate *priv = LMPIM_DB_GET_PRIVATE(self);
+
+	if(priv->offset >= 0)
+		priv->offset -= priv->page_size;
+}
+
 GPtrArray *
 db_query_wubi(LmpimDB *self, const char *code)
 {
-	if(!code)
-		return NULL;
+	g_return_val_if_fail(LMPIM_IS_DB(self), NULL);
+	g_return_val_if_fail(code != NULL, NULL);
 
 	LmpimDBPrivate *priv = LMPIM_DB_GET_PRIVATE(self);
 
-	char *cmd = g_strdup_printf("select * from %s where code like '%s%%'\n", DB_TABLE_WUBI, code);
+	if(priv->offset < 0)
+		return NULL;
+
+	char *cmd = g_strdup_printf("select * from %s where code like '%s%%' limit %d, %d\n", 
+			DB_TABLE_WUBI, 
+			code, 
+			priv->offset, 
+			priv->page_size);
 
 	sqlite3_stmt *stmt = NULL;
 	int ret = sqlite3_prepare_v2(priv->handle, cmd, strlen(cmd), &stmt, NULL);
@@ -336,7 +376,6 @@ db_query_wubi(LmpimDB *self, const char *code)
 
 	sqlite3_finalize(stmt);
 
-	//g_ptr_array_sort (array, (GCompareFunc)db_code_info_compare_freq);
 	return array;
 }
 
@@ -374,45 +413,34 @@ db_query_wubi_code(LmpimDB *self, const gchar *chinese)
 GPtrArray *
 db_query_pinyin(LmpimDB *self, const char *code)
 {
-	if(!code)
-		return NULL;
+	int ret;
+	char *cmd;
+	sqlite3_stmt *stmt;
+	GPtrArray *array;
+
+	g_return_val_if_fail(LMPIM_IS_DB(self), NULL);
+	g_return_val_if_fail(code != NULL, NULL);
 
 	LmpimDBPrivate *priv = LMPIM_DB_GET_PRIVATE(self);
 
-	char *cmd = g_strdup_printf("select * from %s where code = '%s' order by freq desc\n", DB_TABLE_PINYIN, code);
+	if(priv->offset < 0)
+		return NULL;
 
-	sqlite3_stmt *stmt;
+	cmd = g_strdup_printf("select * from %s where code = '%s' order by freq desc limit %d, %d\n", 
+			DB_TABLE_PINYIN, 
+			code, 
+			priv->offset, 
+			priv->page_size);
+
 	sqlite3_prepare_v2(priv->handle, cmd, strlen(cmd), &stmt, NULL);
 
-	GPtrArray *array = g_ptr_array_new();
+	array = g_ptr_array_new();
 	g_ptr_array_set_free_func(array, (GDestroyNotify)g_free);
 
-	int ret = sqlite3_step(stmt);
+	ret = sqlite3_step(stmt);
 
 	while(ret == SQLITE_ROW)
 	{
-#if 0
-		const unsigned char *code = sqlite3_column_text(stmt, 0);
-		const unsigned char *chinese = sqlite3_column_text(stmt, 1);
-
-		gchar *p = (unsigned char *)chinese;
-		gchar utf8_char[8];
-		while(p && (*p != '\0'))
-		{
-			gunichar c = g_utf8_get_char(p);
-			memset(utf8_char, 0, 8);
-			g_unichar_to_utf8(c, utf8_char);
-
-			CodeInfo *info = g_new0(CodeInfo, 1);
-			info->code = g_strdup(code);
-			info->chinese = g_strdup(utf8_char);
-			info->freq = 0;
-			g_ptr_array_add(array, info);
-
-			p = g_utf8_next_char(p);
-		}
-#endif
-
 		CodeInfo *info = g_new0(CodeInfo, 1);
 
 		const unsigned char *code = sqlite3_column_text(stmt, 0);

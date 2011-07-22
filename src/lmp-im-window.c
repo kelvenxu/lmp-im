@@ -56,7 +56,7 @@ struct _LmpIMWindowPrivate
 
 enum
 {
-	CANDIDATE_NUM = 5,
+	CANDIDATE_NUM = 3,
 };
 
 static void
@@ -255,18 +255,42 @@ lmp_im_window_set_candidate_range(LmpIMWindow *self, gint begin, gint end)
 void 
 lmp_im_window_set_candidate(LmpIMWindow *self, GPtrArray *arr)
 {
+	int i;
+
 	LmpIMWindowPrivate *priv = LMP_IM_WINDOW_GET_PRIVATE(self);
 
-	priv->cand_arr = arr;
-	
-	lmp_im_window_set_candidate_range(self, 0, CANDIDATE_NUM);
+	if(priv->cand_arr == NULL)
+	{
+		priv->cand_arr = g_ptr_array_new();
+		g_ptr_array_set_free_func(priv->cand_arr, (GDestroyNotify)g_free);
+	}
+
+	for(i = 0; i < arr->len; ++i)
+	{
+		CodeInfo *info = g_ptr_array_index(arr, i);
+		g_ptr_array_add(priv->cand_arr, info);
+	}
+
+	g_print("cand_arr len: %d\n", priv->cand_arr->len);
+	priv->cand_page_num = priv->cand_arr->len / CANDIDATE_NUM;
+}
+
+void 
+lmp_im_window_page_first(LmpIMWindow *self)
+{
+	LmpIMWindowPrivate *priv = LMP_IM_WINDOW_GET_PRIVATE(self);
+
+	if(!priv->cand_arr || priv->cand_arr->len <= 0)
+		return;
 
 	priv->cand_page = 0;
 	priv->cand_page_num = priv->cand_arr->len / CANDIDATE_NUM;
 
-	if(priv->cand_arr->len % CANDIDATE_NUM)
+	gint start = priv->cand_page * CANDIDATE_NUM;
+
+	if(start >= 0 && start < priv->cand_arr->len)
 	{
-		priv->cand_page_num++;
+		lmp_im_window_set_candidate_range(self, start, start + CANDIDATE_NUM);
 	}
 }
 
@@ -287,19 +311,6 @@ lmp_im_window_page_up(LmpIMWindow *self)
 
 	if(start >= 0 && start < priv->cand_arr->len)
 	{
-#if 0
-		gint i = 0;
-		g_string_erase(priv->cand_str, 0, -1);
-
-		for(i = priv->cand_page * CANDIDATE_NUM; i < priv->cand_arr->len && i < start + CANDIDATE_NUM; ++i)
-		{
-			CodeInfo *info = g_ptr_array_index(priv->cand_arr, i);
-			g_string_append_printf(priv->cand_str, "%d. %s ", i - priv->cand_page * CANDIDATE_NUM, info->chinese);
-		}
-
-		lmp_im_window_set_cand_text(self, priv->cand_str->str);
-#endif
-
 		lmp_im_window_set_candidate_range(self, start, start + CANDIDATE_NUM);
 	}
 }
@@ -321,18 +332,6 @@ lmp_im_window_page_down(LmpIMWindow *self)
 	
 	if(start >= 0 && start < priv->cand_arr->len)
 	{
-#if 0
-		gint i = 0;
-		g_string_erase(priv->cand_str, 0, -1);
-
-		for(i = priv->cand_page * CANDIDATE_NUM; i < priv->cand_arr->len && i < start + CANDIDATE_NUM; ++i)
-		{
-			CodeInfo *info = g_ptr_array_index(priv->cand_arr, i);
-			g_string_append_printf(priv->cand_str, "%d. %s ", i - priv->cand_page * CANDIDATE_NUM, info->chinese);
-		}
-
-		lmp_im_window_set_cand_text(self, priv->cand_str->str);
-#endif
 		lmp_im_window_set_candidate_range(self, start, start + CANDIDATE_NUM);
 	}
 }
