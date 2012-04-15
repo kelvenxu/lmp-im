@@ -203,8 +203,10 @@ lmp_im_object_wubi_mode(GtkIMContext *context, GdkEventKey *event)
 	{
 		if(lmp_im_window_get_code(LMP_IM_WINDOW(priv->im_window)))
 		{
+			db_reset(priv->db);
 			lmp_im_window_backspace(LMP_IM_WINDOW(priv->im_window));
 			const gchar *code = lmp_im_window_get_code(LMP_IM_WINDOW(priv->im_window));
+			lmp_im_window_set_debug_text(LMP_IM_WINDOW(priv->im_window), code);
 			if(code && strlen(code) > 0)
 			{
 				GPtrArray *array = db_query_wubi(priv->db, code);
@@ -305,6 +307,7 @@ lmp_im_object_wubi_mode(GtkIMContext *context, GdkEventKey *event)
 	{
 		// "="号翻页
 		const gchar *code = lmp_im_window_get_code(LMP_IM_WINDOW(priv->im_window));
+        lmp_im_window_set_debug_text(LMP_IM_WINDOW(priv->im_window), code);
 		if(code)
 		{
 			GPtrArray *array = NULL;
@@ -321,7 +324,6 @@ lmp_im_object_wubi_mode(GtkIMContext *context, GdkEventKey *event)
 
 			if(array && array->len > 0)
 			{
-				g_print("array: %p len: %d\n", array, array->len);
 				lmp_im_window_set_candidate(LMP_IM_WINDOW(priv->im_window), array);
 				g_ptr_array_free(array, FALSE);
 			}
@@ -338,6 +340,7 @@ lmp_im_object_wubi_mode(GtkIMContext *context, GdkEventKey *event)
 			if(lmp_im_window_has_code(LMP_IM_WINDOW(priv->im_window)))
 			{
 				const gchar *code = lmp_im_window_get_code(LMP_IM_WINDOW(priv->im_window));
+                lmp_im_window_set_debug_text(LMP_IM_WINDOW(priv->im_window), code);
 				g_signal_emit_by_name(im, "commit", code);
 			}
 
@@ -365,6 +368,7 @@ lmp_im_object_wubi_mode(GtkIMContext *context, GdkEventKey *event)
 			if(lmp_im_window_has_code(LMP_IM_WINDOW(priv->im_window)))
 			{
 				const gchar *code = lmp_im_window_get_code(LMP_IM_WINDOW(priv->im_window));
+                lmp_im_window_set_debug_text(LMP_IM_WINDOW(priv->im_window), code);
 				g_signal_emit_by_name(im, "commit", code);
 			}
 
@@ -435,6 +439,7 @@ lmp_im_object_wubi_mode(GtkIMContext *context, GdkEventKey *event)
 	if(event->keyval == GDK_KEY_Return)
 	{
 		const gchar *code = lmp_im_window_get_code(LMP_IM_WINDOW(priv->im_window));
+        lmp_im_window_set_debug_text(LMP_IM_WINDOW(priv->im_window), code);
 		if(code)
 		{
 			g_signal_emit_by_name(im, "commit", code);
@@ -457,6 +462,7 @@ lmp_im_object_wubi_mode(GtkIMContext *context, GdkEventKey *event)
 		lmp_im_window_show(LMP_IM_WINDOW(priv->im_window));
 		lmp_im_window_append_code_char(LMP_IM_WINDOW(priv->im_window), event->keyval);
 		const gchar *code = lmp_im_window_get_code(LMP_IM_WINDOW(priv->im_window));
+        lmp_im_window_set_debug_text(LMP_IM_WINDOW(priv->im_window), code);
 		if(code)
 		{
 			GPtrArray *array = NULL;
@@ -549,12 +555,49 @@ lmp_im_object_english_mode(GtkIMContext *context, GdkEventKey *event)
 static gboolean 
 lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 {
+    static guint32 time;
+
 	LmpIMObject *im = LMP_IM_OBJECT(context);
 	LmpIMObjectPrivate *priv = LMP_IM_OBJECT_GET_PRIVATE(im);
 
-	if(event->type == GDK_KEY_RELEASE && event->keyval == GDK_KEY_space && event->state & GDK_CONTROL_MASK)
+#if 0
+	if(event->type == GDK_KEY_PRELEASE && (event->state & GDK_CONTROL_MASK))
+    {
+		lmp_im_window_clear(LMP_IM_WINDOW(priv->im_window));
+		gtk_widget_hide(priv->im_window);
+
+		if(priv->mode == LMP_IM_MODE_ENGLISH)
+		{
+			priv->mode = LMP_IM_MODE_WUBI;
+		}
+		else
+		{
+			priv->mode = LMP_IM_MODE_ENGLISH;
+		}
+
+		return FALSE;
+    }
+#endif
+    gboolean control_con1 = FALSE;
+    gboolean shift_con2 = FALSE;
+    static gboolean shift_con3 = FALSE;
+
+    if(event->type == GDK_KEY_PRESS)
+    {
+        //shift_con3 = (event->keyval == GDK_KEY_Shift_L) && (event->state & GDK_SHIFT_MASK);
+        shift_con3 = event->keyval == GDK_KEY_Shift_L;
+    }
+
+    control_con1 = event->type == GDK_KEY_RELEASE && 
+                   event->keyval == GDK_KEY_space && 
+                   (event->state & GDK_CONTROL_MASK);
+
+    shift_con2 = event->type == GDK_KEY_RELEASE && 
+                 event->keyval == GDK_KEY_Shift_L && 
+                 (event->state & GDK_SHIFT_MASK);
+
+    if(control_con1 || (shift_con2 && shift_con3))
 	{
-		g_print("CTRL + |_|\n");
 		lmp_im_window_clear(LMP_IM_WINDOW(priv->im_window));
 		gtk_widget_hide(priv->im_window);
 
@@ -645,7 +688,6 @@ lmp_im_object_install_db(LmpIMObject *self)
 static void     
 lmp_im_object_reset(GtkIMContext *context)
 {
-	g_print("object reset\n");
 }
 
 static void     

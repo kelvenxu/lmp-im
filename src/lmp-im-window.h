@@ -82,5 +82,7 @@ void lmp_im_window_page_first(LmpIMWindow *self);
 
 void lmp_im_window_set_mode(LmpIMWindow *self, LmpIMMode mode);
 
+void lmp_im_window_set_debug_text(LmpIMWindow *self, const gchar *str);
+
 G_END_DECLS
 #endif /*__LMP_IM_WINDOW_H__ */

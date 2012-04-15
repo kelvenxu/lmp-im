@@ -38,6 +38,7 @@ struct _LmpIMWindowPrivate
 	GtkWidget *vbox;
 	GtkWidget *code_label;
 	GtkWidget *cand_label;
+	GtkWidget *debug_label;
 	GtkWidget* sepatator;
 
 	GString *code_str;
@@ -78,11 +79,13 @@ lmp_im_window_init(LmpIMWindow *self)
 	priv->vbox = gtk_vbox_new(FALSE, 0);
 	priv->code_label = gtk_label_new("");
 	priv->cand_label = gtk_label_new("");
+	priv->debug_label = gtk_label_new("");
 
 	priv->sepatator = gtk_hseparator_new();
 	gtk_box_pack_start(GTK_BOX(priv->vbox), priv->code_label, TRUE, TRUE, 1);
 	gtk_box_pack_start(GTK_BOX(priv->vbox), priv->sepatator, TRUE, TRUE, 0);
 	gtk_box_pack_start(GTK_BOX(priv->vbox), priv->cand_label, TRUE, TRUE, 1);
+	gtk_box_pack_start(GTK_BOX(priv->vbox), priv->debug_label, TRUE, TRUE, 1);
 
 	//gtk_container_add(GTK_CONTAINER(self), priv->handle);
 	//gtk_container_add(GTK_CONTAINER(priv->handle), priv->frame);
@@ -100,6 +103,7 @@ lmp_im_window_init(LmpIMWindow *self)
 	gtk_widget_show(priv->vbox);
 	gtk_widget_show(priv->code_label);
 	gtk_widget_show(priv->cand_label);
+	gtk_widget_show(priv->debug_label);
 	gtk_widget_show(priv->sepatator);
 
 	priv->code_str = g_string_new("");
@@ -160,6 +164,16 @@ lmp_im_window_set_cand_text(LmpIMWindow *self, const gchar *str)
 {
 	LmpIMWindowPrivate *priv = LMP_IM_WINDOW_GET_PRIVATE(self);
 	gtk_label_set_markup(GTK_LABEL(priv->cand_label), str);
+}
+
+void 
+lmp_im_window_set_debug_text(LmpIMWindow *self, const gchar *str)
+{
+	LmpIMWindowPrivate *priv = LMP_IM_WINDOW_GET_PRIVATE(self);
+
+    gchar *xcode = g_strdup_printf("X\"%s\"", str);
+	gtk_label_set_markup(GTK_LABEL(priv->debug_label), xcode);
+    g_free(xcode);
 }
 
 void
@@ -271,7 +285,6 @@ lmp_im_window_set_candidate(LmpIMWindow *self, GPtrArray *arr)
 		g_ptr_array_add(priv->cand_arr, info);
 	}
 
-	g_print("cand_arr len: %d\n", priv->cand_arr->len);
 	priv->cand_page_num = priv->cand_arr->len / CANDIDATE_NUM;
 }
 
