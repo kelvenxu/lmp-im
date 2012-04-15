@@ -287,25 +287,12 @@ db_query(LmpimDB *self, const char *table_name, const char *query, DBQueryCallba
 	return ret;
 }
 
-#if 0
 //按freq的大小从大到小排序，即將使用频率高放在最前面 
 static gint
-db_code_info_compare_freq(CodeInfo *c1, CodeInfo *c2)
+freq_compare(CodeInfo **c1, CodeInfo **c2)
 {
-	if (strlen(c1->code) > strlen(c2->code))
-	{
-		return -1;
-	}
-	else if (strlen(c1->code) < strlen(c2->code))
-	{
-		return 1;
-	}
-	else
-	{
-		return (c2->freq - c1->freq);
-	}
+  return ((*c2)->freq - (*c1)->freq);
 }
-#endif
 
 void
 db_query_next(LmpimDB *self)
@@ -337,7 +324,7 @@ db_query_wubi(LmpimDB *self, const char *code)
 	if(priv->offset < 0)
 		return NULL;
 
-	char *cmd = g_strdup_printf("select * from %s where code like '%s%%' limit %d, %d\n", 
+	char *cmd = g_strdup_printf("select * from %s where code like '%s%%' limit %d, %d", 
 			DB_TABLE_WUBI, 
 			code, 
 			priv->offset, 
@@ -375,6 +362,8 @@ db_query_wubi(LmpimDB *self, const char *code)
 	}
 
 	sqlite3_finalize(stmt);
+
+  g_ptr_array_sort(array, (GCompareFunc)freq_compare);
 
 	return array;
 }
