@@ -596,7 +596,8 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
                  event->keyval == GDK_KEY_Shift_L && 
                  (event->state & GDK_SHIFT_MASK);
 
-    if(control_con1 || (shift_con2 && shift_con3))
+    //if(control_con1 || (shift_con2 && shift_con3))
+    if(control_con1)// || (shift_con2 && shift_con3))
 	{
 		lmp_im_window_clear(LMP_IM_WINDOW(priv->im_window));
 		gtk_widget_hide(priv->im_window);
@@ -620,6 +621,21 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 		priv->mode = LMP_IM_MODE_ENGLISH;
 		return FALSE;
 	}
+    else if(shift_con2 && shift_con3)
+    {
+        if(priv->mode == LMP_IM_MODE_WUBI)
+        {
+            printf("wubi->wubi en\n");
+            priv->mode = LMP_IM_MODE_WUBI_ENGLISH;
+            return FALSE;
+        }
+        else if(priv->mode == LMP_IM_MODE_WUBI_ENGLISH)
+        {
+            printf("wubi en->wubi\n");
+            priv->mode = LMP_IM_MODE_WUBI;
+            return FALSE;
+        }
+    }
 
 	if(event->type == GDK_KEY_PRESS 
 			&& event->keyval == GDK_KEY_space 
@@ -633,11 +649,11 @@ lmp_im_object_filter_keypress(GtkIMContext *context, GdkEventKey *event)
 		return FALSE;
 	}
 
-	if(priv->mode == LMP_IM_MODE_ENGLISH)
+	if(priv->mode == LMP_IM_MODE_ENGLISH || priv->mode == LMP_IM_MODE_WUBI_ENGLISH)
 	{
 		return lmp_im_object_english_mode(context, event);
 	}
-	else
+	else if(priv->mode == LMP_IM_MODE_WUBI || priv->mode == LMP_IM_MODE_PINYIN)
 	{
 		return lmp_im_object_wubi_mode(context, event);
 	}

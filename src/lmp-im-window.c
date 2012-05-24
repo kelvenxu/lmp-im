@@ -76,12 +76,12 @@ lmp_im_window_init(LmpIMWindow *self)
 	LmpIMWindowPrivate *priv = LMP_IM_WINDOW_GET_PRIVATE(self);
 	//priv->handle = gtk_handle_box_new();
 	priv->frame = gtk_frame_new(NULL);
-	priv->vbox = gtk_vbox_new(FALSE, 0);
+	priv->vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 	priv->code_label = gtk_label_new("");
 	priv->cand_label = gtk_label_new("");
 	priv->debug_label = gtk_label_new("");
 
-	priv->sepatator = gtk_hseparator_new();
+	priv->sepatator = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
 	gtk_box_pack_start(GTK_BOX(priv->vbox), priv->code_label, TRUE, TRUE, 1);
 	gtk_box_pack_start(GTK_BOX(priv->vbox), priv->sepatator, TRUE, TRUE, 0);
 	gtk_box_pack_start(GTK_BOX(priv->vbox), priv->cand_label, TRUE, TRUE, 1);
